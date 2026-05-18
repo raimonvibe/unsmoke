@@ -3,6 +3,7 @@
 import { FormEvent, ReactNode, useState } from "react";
 import { localDateTimeToIso, toLocalDateString } from "@/lib/date";
 import { deriveProductType } from "@/lib/normalize-quit-data";
+import { QuitDateTimeFields } from "./QuitDateTimeFields";
 import {
   btnPrimaryClass,
   inputClass,
@@ -130,28 +131,12 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           <legend className="text-sm font-medium text-sage-700 sm:text-base">
             When did you quit (or plan to quit)?
           </legend>
-          <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
-            <label className="block min-w-0">
-              <span className="sr-only">Date</span>
-              <input
-                type="date"
-                value={quitDate}
-                onChange={(e) => setQuitDate(e.target.value)}
-                required
-                className={inputClass}
-              />
-            </label>
-            <label className="block min-w-0">
-              <span className="sr-only">Time</span>
-              <input
-                type="time"
-                value={quitTime}
-                onChange={(e) => setQuitTime(e.target.value)}
-                required
-                className={inputClass}
-              />
-            </label>
-          </div>
+          <QuitDateTimeFields
+            quitDate={quitDate}
+            quitTime={quitTime}
+            onDateChange={setQuitDate}
+            onTimeChange={setQuitTime}
+          />
         </fieldset>
 
         <fieldset className="space-y-3">
