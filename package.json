@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsx --test src/lib/*.test.ts"
+    "test": "tsx --test src/lib/*.test.ts",
+    "test:watch": "tsx --test --watch src/lib/*.test.ts"
   },
   "dependencies": {
     "next": "14.2.35",

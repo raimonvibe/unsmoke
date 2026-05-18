@@ -3,9 +3,17 @@ import { cardClass, statGridClass } from "@/lib/ui";
 
 import {
   formatCurrency,
+  getAchievedMilestones,
+  getLatestAchievedMilestone,
   getMilestoneProgress,
+  getNextMilestone,
   getTimeSinceQuit,
 } from "@/lib/calculations";
+import {
+  getMilestoneCategoryIcon,
+  getMilestoneSourceShortName,
+  MILESTONES,
+} from "@/lib/milestones";
 import {
   getConsumptionStats,
   getDailyCost,
@@ -26,6 +34,9 @@ export function DashboardStats({ quitData, now }: DashboardStatsProps) {
     100,
     Math.max(0, getMilestoneProgress(quitDate, now))
   );
+  const achievedCount = getAchievedMilestones(quitDate, now).length;
+  const latestWin = getLatestAchievedMilestone(quitDate, now);
+  const nextMilestone = getNextMilestone(quitDate, now);
   const consumptionStats = getConsumptionStats(quitData, quitDate, now);
   const hasEstimatedTobaccoNicotine = consumptionStats.some(
     (s) => s.hint === "Estimated from blend"
@@ -85,13 +96,35 @@ export function DashboardStats({ quitData, now }: DashboardStatsProps) {
         </p>
       )}
 
+      {latestWin && (
+        <div className="rounded-2xl border border-sage-200 bg-gradient-to-br from-sage-50 to-white p-4 shadow-sm sm:p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+            Latest health win
+          </p>
+          <div className="mt-2 flex items-start gap-3">
+            <span className="text-2xl" aria-hidden>
+              {getMilestoneCategoryIcon(latestWin.category)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-sage-800 sm:text-base">
+                {latestWin.benefit}
+              </p>
+              <p className="mt-1 text-xs text-stone-500 sm:text-sm">
+                {latestWin.label} ·{" "}
+                {getMilestoneSourceShortName(latestWin.sourceId)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={cardClass}>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <span className="text-sm font-medium text-sage-700 sm:text-base">
-            Milestone progress
+            Health milestones
           </span>
           <span className="text-sm font-bold text-sage-600 sm:text-base">
-            {milestonePct}%
+            {achievedCount}/{MILESTONES.length}
           </span>
         </div>
         <div className="h-2.5 overflow-hidden rounded-full bg-sage-100 sm:h-3">
@@ -100,9 +133,16 @@ export function DashboardStats({ quitData, now }: DashboardStatsProps) {
             style={{ width: `${milestonePct}%` }}
           />
         </div>
+        {nextMilestone && (
+          <p className="mt-2 text-xs text-stone-600 sm:text-sm">
+            <span className="font-medium text-sage-700">Up next:</span>{" "}
+            {nextMilestone.benefit}
+            <span className="text-stone-400"> · {nextMilestone.label}</span>
+          </p>
+        )}
         <p className="mt-2 text-xs text-stone-500 sm:text-sm">
-          Share of CDC-published recovery milestones reached in this app — not a
-          medical score or personal health reading
+          CDC &amp; WHO recovery milestones reached in this app — not a medical
+          score or personal health reading
         </p>
       </div>
     </section>

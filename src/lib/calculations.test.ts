@@ -1,22 +1,23 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-  formatCountdown,
-  getAchievedMilestones,
   getCigarettesAvoided,
   getElapsedDays,
   getElapsedFractionalDays,
-  getMilestoneProgress,
+  getElapsedMs,
   getMoneySaved,
-  getNextMilestone,
   getTimeSinceQuit,
-  getTimeUntilMilestone,
+  MS_PER_DAY,
   scaleByElapsedDays,
   scaleByElapsedDaysFloored,
 } from "./calculations";
-import { MILESTONES } from "./milestones";
 import { at, MS } from "../test/helpers";
 import { CIGARETTES, QUIT } from "../test/fixtures";
+
+/**
+ * Core time and scaling primitives used by usage stats and milestone unlocks.
+ * Milestone-specific behavior lives in calculations-milestones.test.ts.
+ */
 
 describe("elapsed time", () => {
   it("decomposes stopwatch duration into days through seconds", () => {
@@ -32,6 +33,7 @@ describe("elapsed time", () => {
 
   it("clamps elapsed ms to zero before quit date", () => {
     assert.equal(getElapsedFractionalDays(QUIT, at(QUIT, -MS.hour)), 0);
+    assert.equal(getElapsedMs(QUIT, at(QUIT, -MS.hour)), 0);
     assert.deepEqual(getTimeSinceQuit(QUIT, at(QUIT, -MS.hour)), {
       days: 0,
       hours: 0,
@@ -46,78 +48,51 @@ describe("elapsed time", () => {
     assert.equal(getElapsedDays(QUIT, now), 1);
     assert.equal(getElapsedDays(QUIT, now), getTimeSinceQuit(QUIT, now).days);
   });
+
+  it("uses a fixed ms-per-day constant for fractional days", () => {
+    const halfDay = at(QUIT, 12 * MS.hour);
+    assert.equal(getElapsedMs(QUIT, halfDay), 12 * MS.hour);
+    assert.equal(getElapsedFractionalDays(QUIT, halfDay), 0.5);
+    assert.equal(MS_PER_DAY, 86_400_000);
+  });
 });
 
 describe("scaleByElapsedDays", () => {
-  it("scales daily rates with fractional days", () => {
+  it("scales daily rates with fractional days (money, ml, nicotine)", () => {
     assert.equal(scaleByElapsedDays(10, QUIT, at(QUIT, 12 * MS.hour)), 5);
     assert.equal(scaleByElapsedDays(10, QUIT, at(QUIT, MS.day)), 10);
+    assert.equal(scaleByElapsedDays(0, QUIT, at(QUIT, MS.day)), 0);
   });
 
-  it("floors whole-unit counts", () => {
+  it("floors whole-unit counts (cigarettes, bottles, packages)", () => {
     assert.equal(scaleByElapsedDaysFloored(20, QUIT, at(QUIT, MS.hour)), 0);
     assert.equal(scaleByElapsedDaysFloored(20, QUIT, at(QUIT, 12 * MS.hour)), 10);
+    assert.equal(
+      scaleByElapsedDaysFloored(20, QUIT, at(QUIT, MS.day + MS.hour)),
+      20
+    );
+  });
+
+  it("never returns negative scaled values when quit is in the future", () => {
+    assert.equal(scaleByElapsedDays(100, QUIT, at(QUIT, -MS.day)), 0);
+    assert.equal(scaleByElapsedDaysFloored(100, QUIT, at(QUIT, -MS.day)), 0);
   });
 });
 
-describe("cigarette savings", () => {
+describe("cigarette savings (legacy calculation path)", () => {
   const costPerDay = CIGARETTES.perDay * CIGARETTES.costPerUnit;
 
-  it("money saved = cost per day × elapsed days", () => {
+  it("money saved = cost per day × elapsed fractional days", () => {
     assert.equal(getMoneySaved(QUIT, costPerDay, at(QUIT, 12 * MS.hour)), 5);
     assert.equal(getMoneySaved(QUIT, costPerDay, at(QUIT, MS.day)), 10);
   });
 
-  it("cigarettes avoided uses floor", () => {
+  it("cigarettes avoided uses floor of fractional consumption", () => {
     assert.equal(getCigarettesAvoided(QUIT, CIGARETTES.perDay, at(QUIT, MS.hour)), 0);
     assert.equal(getCigarettesAvoided(QUIT, CIGARETTES.perDay, at(QUIT, MS.day)), 20);
-  });
-});
-
-describe("milestones", () => {
-  it("has 10 CDC-aligned milestones in ascending order", () => {
-    assert.equal(MILESTONES.length, 10);
-    for (let i = 1; i < MILESTONES.length; i++) {
-      assert.ok(MILESTONES[i].durationMs > MILESTONES[i - 1].durationMs);
-    }
-  });
-
-  it("unlocks at exact thresholds only", () => {
-    assert.equal(getAchievedMilestones(QUIT, at(QUIT, 19 * MS.minute)).length, 0);
-    assert.equal(getAchievedMilestones(QUIT, at(QUIT, 20 * MS.minute)).length, 1);
-    assert.equal(getAchievedMilestones(QUIT, at(QUIT, 20 * 365 * MS.day)).length, 10);
-  });
-
-  it("finds next milestone or null when complete", () => {
-    assert.equal(getNextMilestone(QUIT, QUIT)?.id, "20min");
-    assert.equal(getNextMilestone(QUIT, at(QUIT, 20 * MS.minute))?.id, "24h");
-    assert.equal(getNextMilestone(QUIT, at(QUIT, 20 * 365 * MS.day)), null);
-  });
-
-  it("countdown hits zero at milestone time", () => {
-    const m = MILESTONES[0];
-    assert.equal(getTimeUntilMilestone(QUIT, m, at(QUIT, m.durationMs)), 0);
     assert.equal(
-      getTimeUntilMilestone(QUIT, m, at(QUIT, m.durationMs - MS.second)),
-      1000
+      getCigarettesAvoided(QUIT, CIGARETTES.perDay, at(QUIT, MS.day + 12 * MS.hour)),
+      30
     );
-  });
-
-  it("milestone progress is percent completed", () => {
-    assert.equal(getMilestoneProgress(QUIT, QUIT), 0);
-    assert.equal(getMilestoneProgress(QUIT, at(QUIT, 20 * MS.minute)), 10);
-    assert.equal(getMilestoneProgress(QUIT, at(QUIT, 20 * 365 * MS.day)), 100);
-  });
-});
-
-describe("formatCountdown", () => {
-  it("formats at appropriate granularity", () => {
-    assert.equal(formatCountdown(45 * MS.second), "45s");
-    assert.equal(formatCountdown(5 * MS.minute + 30 * MS.second), "5m 30s");
-    assert.equal(formatCountdown(2 * MS.day + MS.hour), "2d 1h 0m");
-  });
-
-  it("never shows negative time", () => {
-    assert.equal(formatCountdown(-1), "0s");
   });
 });

@@ -29,7 +29,7 @@ export const WHO_CESSATION: HealthSource = {
   id: "who-cessation",
   name: "WHO — Health benefits of smoking cessation",
   url: "https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation",
-  note: "General global guidance; timelines vary by individual.",
+  note: "Early milestones (12 hours, 2–12 weeks, 1–9 months) use WHO’s published Q&A wording.",
 };
 
 export const HEALTH_SOURCES: HealthSource[] = [
@@ -42,7 +42,7 @@ export const LOCAL_DATA_NOTICE =
   "Your journey is saved only in this browser—not in the cloud. Clearing cookies, site data, or browsing data for this site will erase your progress. Private browsing may not keep it after you close the window.";
 
 export const APP_DISCLAIMER =
-  "Unsmoke is a personal tracking tool, not medical advice, and is not affiliated with CDC, WHO, or any health authority. Milestones summarize published public-health timelines for motivation only. Your results depend on your inputs and individual health. Consult a qualified professional for medical questions.";
+  "Unsmoke is a personal tracking tool, not medical advice, and is not affiliated with CDC, WHO, or any health authority. Milestones summarize published CDC and WHO quit-smoking timelines for motivation only. Your results depend on your inputs and individual health. Consult a qualified professional for medical questions.";
 
 export const SAVINGS_DISCLAIMER =
   "Money and usage figures are calculated from the numbers you enter. They are estimates for motivation, not financial or clinical records.";

@@ -7,6 +7,7 @@ import {
   HEALTH_SOURCES,
   NICOTINE_DISCLAIMER,
   SAVINGS_DISCLAIMER,
+  WHO_CESSATION,
 } from "@/lib/health-sources";
 import { MILESTONE_SOURCE } from "@/lib/milestones";
 import { LocalDataNotice } from "./LocalDataNotice";
@@ -53,11 +54,16 @@ export function HealthSourcesPanel({ variant = "full" }: HealthSourcesPanelProps
             </h3>
             <p className="mb-2 leading-relaxed">
               Milestones follow the U.S. CDC table &quot;Health benefits of
-              quitting smoking over time.&quot; We use a single representative
-              day within each CDC range so the in-app countdown can progress
-              (for example, &quot;several days&quot; is shown at 3 days).
+              quitting smoking over time&quot; and the WHO Q&amp;A on smoking
+              cessation. We use a representative time within each published
+              range so the in-app countdown can progress (for example,
+              &quot;several days&quot; at 3 days, &quot;1–12 months&quot; at 3, 6,
+              and 9 months, &quot;5–10 years&quot; at 5, 7, and 8 years).
             </p>
             <SourceLink source={MILESTONE_SOURCE} />
+            <div className="mt-3">
+              <SourceLink source={WHO_CESSATION} />
+            </div>
           </div>
 
           <div>
@@ -65,7 +71,9 @@ export function HealthSourcesPanel({ variant = "full" }: HealthSourcesPanelProps
               Additional references
             </h3>
             <ul className="space-y-3">
-              {HEALTH_SOURCES.filter((s) => s.id !== MILESTONE_SOURCE.id).map(
+              {HEALTH_SOURCES.filter(
+                (s) => s.id !== MILESTONE_SOURCE.id && s.id !== WHO_CESSATION.id
+              ).map(
                 (source) => (
                   <li key={source.id}>
                     <SourceLink source={source} />

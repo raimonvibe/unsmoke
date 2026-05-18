@@ -84,6 +84,14 @@ export function getNextMilestone(
   return MILESTONES.find((m) => elapsedMs < m.durationMs) ?? null;
 }
 
+export function getLatestAchievedMilestone(
+  quitDate: Date,
+  now: Date = new Date()
+): Milestone | null {
+  const achieved = getAchievedMilestones(quitDate, now);
+  return achieved.length > 0 ? achieved[achieved.length - 1] : null;
+}
+
 export function getMilestoneProgress(
   quitDate: Date,
   now: Date = new Date()

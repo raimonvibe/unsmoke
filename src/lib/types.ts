@@ -38,6 +38,10 @@ export interface QuitData {
   tobacco?: TobaccoUsage;
 }
 
+export type MilestonePhase = "hours" | "weeks" | "months" | "years";
+
+export type MilestoneCategory = "heart" | "blood" | "lungs" | "cancer";
+
 export interface Milestone {
   id: string;
   label: string;
@@ -47,6 +51,8 @@ export interface Milestone {
   sourceId: string;
   /** How the source describes the timeframe (shown for transparency) */
   publishedTimeframe?: string;
+  phase: MilestonePhase;
+  category: MilestoneCategory;
 }
 
 export interface TimeSinceQuit {

@@ -3,7 +3,10 @@ import { describe, it } from "node:test";
 import {
   formatCurrency,
   getAchievedMilestones,
+  getLatestAchievedMilestone,
+  getMilestoneProgress,
   getMoneySaved,
+  getNextMilestone,
 } from "./calculations";
 import { MILESTONES } from "./milestones";
 import { getStatsPageData } from "./stats-page";
@@ -86,9 +89,25 @@ describe("stats page data matches underlying calculations", () => {
     );
   });
 
-  it("milestone count never exceeds CDC milestone list length", () => {
-    const page = getStatsPageData(quitData({ cigarettes: CIGARETTES }), [], now);
+  it("milestones on stats page match the shared unlock engine", () => {
+    const data = quitData({ cigarettes: CIGARETTES });
+    const page = getStatsPageData(data, [], now);
+    const quitDate = new Date(data.quitDate);
+
     assert.ok(page.milestonesAchieved.length <= MILESTONES.length);
+    assert.deepEqual(
+      page.milestonesAchieved,
+      getAchievedMilestones(quitDate, now)
+    );
+    assert.equal(
+      getMilestoneProgress(quitDate, now),
+      Math.round((page.milestonesAchieved.length / MILESTONES.length) * 100)
+    );
+    assert.equal(
+      getLatestAchievedMilestone(quitDate, now)?.id,
+      page.milestonesAchieved.at(-1)?.id ?? null
+    );
+    assert.equal(getNextMilestone(quitDate, now)?.id, "2w");
   });
 });
 
