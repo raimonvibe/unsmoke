@@ -50,8 +50,9 @@ export function QuitDateTimeFields({
 
   return (
     <div className="min-w-0 max-w-full space-y-4">
-      <label className="block min-w-0 space-y-2">
+      <label className="block w-full min-w-0 max-w-full space-y-2">
         <span className="text-sm font-medium text-sage-700">Date</span>
+        <div className="w-full min-w-0 max-w-full overflow-hidden">
         <input
           id="quit-date"
           type="date"
@@ -61,6 +62,7 @@ export function QuitDateTimeFields({
           className={pickerInputClass}
           autoComplete="off"
         />
+        </div>
         <span className="text-xs text-stone-500">
           Tap to open your device&apos;s calendar
         </span>
@@ -69,7 +71,7 @@ export function QuitDateTimeFields({
       <div
         role="group"
         aria-labelledby="quit-time-label"
-        className="space-y-2"
+        className="w-full min-w-0 max-w-full space-y-2"
       >
         <p id="quit-time-label" className="text-sm font-medium text-sage-700">
           Time
@@ -115,20 +117,22 @@ export function QuitDateTimeFields({
           </label>
         </div>
 
-        <label className="block min-w-0 space-y-2 pt-1">
+        <label className="block w-full min-w-0 max-w-full space-y-2 pt-1">
           <span className="text-xs font-medium text-stone-600">
             Or pick a time
           </span>
-          <input
-            id="quit-time"
-            type="time"
-            value={quitTime}
-            onChange={(e) => onTimeChange(e.target.value)}
-            required
-            step={60}
-            className={pickerInputClass}
-            aria-label="Quit time — clock picker"
-          />
+          <div className="w-full min-w-0 max-w-full overflow-hidden">
+            <input
+              id="quit-time"
+              type="time"
+              value={quitTime}
+              onChange={(e) => onTimeChange(e.target.value)}
+              required
+              step={60}
+              className={pickerInputClass}
+              aria-label="Quit time — clock picker"
+            />
+          </div>
         </label>
       </div>
     </div>

@@ -1,6 +1,6 @@
 /** Centered content column — never wider than ~512px on any screen */
 export const contentColumnClass =
-  "mx-auto w-full max-w-md min-w-0 pl-[max(1.25rem,env(safe-area-inset-left))] pr-[max(1.25rem,env(safe-area-inset-right))] sm:max-w-lg sm:pl-6 sm:pr-6";
+  "page-gutter-x mx-auto w-full max-w-md min-w-0 sm:max-w-lg";
 
 /** Main app pages (Home, Stats) */
 export const pageContainerClass = `${contentColumnClass} pt-5 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:pt-7 sm:pb-[calc(6rem+env(safe-area-inset-bottom,0px))] md:pt-8`;
@@ -33,7 +33,7 @@ export const sectionTitleClass =
 
 /** Bottom nav: compact tabs centered, not stretched edge-to-edge */
 export const navInnerClass =
-  "mx-auto flex w-full max-w-md min-w-0 items-center justify-center gap-3 py-2.5 pl-[max(1.25rem,env(safe-area-inset-left))] pr-[max(1.25rem,env(safe-area-inset-right))] sm:max-w-lg sm:gap-6 sm:px-6";
+  "page-gutter-x mx-auto flex w-full max-w-md min-w-0 items-center justify-center gap-3 py-2.5 sm:max-w-lg sm:gap-6";
 
 export const navLinkClass =
   "flex min-h-[3rem] min-w-[5.5rem] flex-col items-center justify-center gap-0.5 rounded-xl px-5 py-2 text-xs font-medium transition-colors sm:min-h-[3.25rem] sm:min-w-[6.5rem] sm:gap-1 sm:text-sm";
