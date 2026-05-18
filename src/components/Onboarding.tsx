@@ -7,12 +7,24 @@ import {
   defaultQuitFormState,
   quitFormStateFromData,
 } from "@/lib/quit-data-form";
+import {
+  BOTTLE_ML_PRESETS,
+  CIGARETTES_PER_DAY_PRESETS,
+  COST_PER_BOTTLE_PRESETS,
+  COST_PER_CIGARETTE_PRESETS,
+  COST_PER_PACKAGE_PRESETS,
+  GRAMS_PER_DAY_PRESETS,
+  ML_PER_DAY_PRESETS,
+  NICOTINE_MG_PER_ML_PRESETS,
+  PACK_NICOTINE_MG_PER_G_PRESETS,
+  PACKAGE_GRAMS_PRESETS,
+} from "@/lib/usage-pickers";
 import { LocalDataNotice } from "./LocalDataNotice";
 import { QuitDateTimeFields } from "./QuitDateTimeFields";
+import { ValuePicker } from "./ValuePicker";
 import {
   btnPrimaryClass,
   btnSecondaryClass,
-  inputClass,
   pageContainerNarrowClass,
   sectionTitleClass,
 } from "@/lib/ui";
@@ -187,36 +199,29 @@ export function Onboarding({
 
         {usesCigarettes && (
           <ProductSection title="Cigarettes">
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-sage-700">
-                Cigarettes per day
-              </span>
-              <input
-                type="number"
-                min="1"
-                step="1"
-                inputMode="numeric"
-                value={cigarettesPerDay}
-                onChange={(e) => setCigarettesPerDay(e.target.value)}
-                required={usesCigarettes}
-                className={inputClass}
-              />
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-sage-700">
-                Cost per cigarette ($)
-              </span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                inputMode="decimal"
-                value={costPerCigarette}
-                onChange={(e) => setCostPerCigarette(e.target.value)}
-                required={usesCigarettes}
-                className={inputClass}
-              />
-            </label>
+            <ValuePicker
+              id="cigarettes-per-day"
+              label="Cigarettes per day"
+              value={cigarettesPerDay}
+              onChange={setCigarettesPerDay}
+              presets={CIGARETTES_PER_DAY_PRESETS}
+              min={1}
+              max={60}
+              step={1}
+              required={usesCigarettes}
+            />
+            <ValuePicker
+              id="cost-per-cigarette"
+              label="Cost per cigarette"
+              value={costPerCigarette}
+              onChange={setCostPerCigarette}
+              presets={COST_PER_CIGARETTE_PRESETS}
+              min={0.1}
+              max={5}
+              step={0.05}
+              unit="USD"
+              required={usesCigarettes}
+            />
           </ProductSection>
         )}
 
@@ -227,27 +232,19 @@ export function Onboarding({
               Nicotine uses your pack label when provided; otherwise a rough
               estimate from blend strength.
             </p>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-sage-700">
-                Nicotine on pack (mg per gram) — optional
-              </span>
-              <input
-                type="number"
-                min="0.1"
-                step="0.1"
-                inputMode="decimal"
-                placeholder="e.g. 14 if shown on pouch"
-                value={packNicotineMgPerGram}
-                onChange={(e) => setPackNicotineMgPerGram(e.target.value)}
-                className={inputClass}
-              />
-              <span className="block text-xs text-stone-500">
-                Check your pouch label. Leave blank to estimate from blend below
-                (light ~{VARIANT_NICOTINE_MG_PER_GRAM.light}, medium ~
-                {VARIANT_NICOTINE_MG_PER_GRAM.medium}, heavy ~
-                {VARIANT_NICOTINE_MG_PER_GRAM.heavy} mg/g).
-              </span>
-            </label>
+            <ValuePicker
+              id="pack-nicotine-mg-per-g"
+              label="Nicotine on pack (mg per gram) — optional"
+              value={packNicotineMgPerGram}
+              onChange={setPackNicotineMgPerGram}
+              presets={PACK_NICOTINE_MG_PER_G_PRESETS}
+              min={8}
+              max={24}
+              step={0.5}
+              unit="mg/g"
+              optional
+              hint={`Check your pouch label. Leave blank to estimate from blend (light ~${VARIANT_NICOTINE_MG_PER_GRAM.light}, medium ~${VARIANT_NICOTINE_MG_PER_GRAM.medium}, heavy ~${VARIANT_NICOTINE_MG_PER_GRAM.heavy} mg/g).`}
+            />
             <fieldset className="space-y-2">
               <legend className="text-sm font-medium text-sage-700">
                 Blend strength
@@ -275,53 +272,42 @@ export function Onboarding({
                 ))}
               </div>
             </fieldset>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-sage-700">
-                Tobacco per day (grams)
-              </span>
-              <input
-                type="number"
-                min="0.1"
-                step="0.1"
-                inputMode="decimal"
-                value={gramsPerDay}
-                onChange={(e) => setGramsPerDay(e.target.value)}
-                required={usesTobacco}
-                className={inputClass}
-              />
-            </label>
-            <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
-              <label className="block min-w-0 space-y-2">
-                <span className="text-sm font-medium text-sage-700">
-                  Package size (grams)
-                </span>
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  inputMode="numeric"
-                  value={packageGrams}
-                  onChange={(e) => setPackageGrams(e.target.value)}
-                  required={usesTobacco}
-                  className={inputClass}
-                />
-              </label>
-              <label className="block min-w-0 space-y-2">
-                <span className="text-sm font-medium text-sage-700">
-                  Cost per package ($)
-                </span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  inputMode="decimal"
-                  value={costPerPackage}
-                  onChange={(e) => setCostPerPackage(e.target.value)}
-                  required={usesTobacco}
-                  className={inputClass}
-                />
-              </label>
-            </div>
+            <ValuePicker
+              id="grams-per-day"
+              label="Tobacco per day"
+              value={gramsPerDay}
+              onChange={setGramsPerDay}
+              presets={GRAMS_PER_DAY_PRESETS}
+              min={0.5}
+              max={40}
+              step={0.5}
+              unit="g"
+              required={usesTobacco}
+            />
+            <ValuePicker
+              id="package-grams"
+              label="Package size"
+              value={packageGrams}
+              onChange={setPackageGrams}
+              presets={PACKAGE_GRAMS_PRESETS}
+              min={10}
+              max={250}
+              step={5}
+              unit="g"
+              required={usesTobacco}
+            />
+            <ValuePicker
+              id="cost-per-package"
+              label="Cost per package"
+              value={costPerPackage}
+              onChange={setCostPerPackage}
+              presets={COST_PER_PACKAGE_PRESETS}
+              min={1}
+              max={50}
+              step={1}
+              unit="USD"
+              required={usesTobacco}
+            />
           </ProductSection>
         )}
 
@@ -331,68 +317,54 @@ export function Onboarding({
               We estimate savings from liquid volume and nicotine strength — not
               puffs.
             </p>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-sage-700">
-                E-liquid per day (ml)
-              </span>
-              <input
-                type="number"
-                min="0.1"
-                step="0.1"
-                inputMode="decimal"
-                value={mlPerDay}
-                onChange={(e) => setMlPerDay(e.target.value)}
-                required={usesVaping}
-                className={inputClass}
-              />
-            </label>
-            <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
-              <label className="block min-w-0 space-y-2">
-                <span className="text-sm font-medium text-sage-700">
-                  Nicotine strength (mg/ml)
-                </span>
-                <input
-                  type="number"
-                  min="0.1"
-                  step="0.1"
-                  inputMode="decimal"
-                  value={nicotineMgPerMl}
-                  onChange={(e) => setNicotineMgPerMl(e.target.value)}
-                  required={usesVaping}
-                  className={inputClass}
-                />
-              </label>
-              <label className="block min-w-0 space-y-2">
-                <span className="text-sm font-medium text-sage-700">
-                  Bottle size (ml)
-                </span>
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  inputMode="numeric"
-                  value={bottleMl}
-                  onChange={(e) => setBottleMl(e.target.value)}
-                  required={usesVaping}
-                  className={inputClass}
-                />
-              </label>
-            </div>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-sage-700">
-                Cost per bottle ($)
-              </span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                inputMode="decimal"
-                value={costPerBottle}
-                onChange={(e) => setCostPerBottle(e.target.value)}
-                required={usesVaping}
-                className={inputClass}
-              />
-            </label>
+            <ValuePicker
+              id="ml-per-day"
+              label="E-liquid per day"
+              value={mlPerDay}
+              onChange={setMlPerDay}
+              presets={ML_PER_DAY_PRESETS}
+              min={0.5}
+              max={30}
+              step={0.5}
+              unit="ml"
+              required={usesVaping}
+            />
+            <ValuePicker
+              id="nicotine-mg-per-ml"
+              label="Nicotine strength"
+              value={nicotineMgPerMl}
+              onChange={setNicotineMgPerMl}
+              presets={NICOTINE_MG_PER_ML_PRESETS}
+              min={0.1}
+              max={50}
+              step={1}
+              unit="mg/ml"
+              required={usesVaping}
+            />
+            <ValuePicker
+              id="bottle-ml"
+              label="Bottle size"
+              value={bottleMl}
+              onChange={setBottleMl}
+              presets={BOTTLE_ML_PRESETS}
+              min={2}
+              max={120}
+              step={1}
+              unit="ml"
+              required={usesVaping}
+            />
+            <ValuePicker
+              id="cost-per-bottle"
+              label="Cost per bottle"
+              value={costPerBottle}
+              onChange={setCostPerBottle}
+              presets={COST_PER_BOTTLE_PRESETS}
+              min={1}
+              max={50}
+              step={1}
+              unit="USD"
+              required={usesVaping}
+            />
           </ProductSection>
         )}
 
