@@ -5,7 +5,9 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: ["page-gutter-x", "app-page", "app-form-field", "app-form", "form-field-row"],
   theme: {
     screens: {
       xs: "380px",

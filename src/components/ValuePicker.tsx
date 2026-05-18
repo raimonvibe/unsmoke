@@ -7,7 +7,7 @@ import {
   presetSelectValue,
   roundToStep,
 } from "@/lib/usage-pickers";
-import { inputClass, selectClass } from "@/lib/ui";
+import { formFieldWrapperClass, inputClass, selectClass } from "@/lib/ui";
 
 interface ValuePickerProps {
   id: string;
@@ -85,7 +85,7 @@ export function ValuePicker({
       )}
       <p className="text-xs text-stone-500">{pickerHint}</p>
 
-      <label className="block min-w-0 space-y-1">
+      <label className={`${formFieldWrapperClass} space-y-1`}>
         <span className="sr-only">{label} — quick pick</span>
         <select
           id={`${id}-preset`}
@@ -111,7 +111,7 @@ export function ValuePicker({
         </select>
       </label>
 
-      <div className="flex items-stretch gap-2">
+      <div className="form-field-row flex items-stretch gap-2">
         <button
           type="button"
           onClick={() => adjust(-step)}
@@ -141,7 +141,7 @@ export function ValuePicker({
         </button>
       </div>
 
-      <label className="block min-w-0 space-y-1">
+      <label className={`${formFieldWrapperClass} space-y-1`}>
         <span className="text-xs font-medium text-stone-600">Exact value</span>
         <input
           id={id}

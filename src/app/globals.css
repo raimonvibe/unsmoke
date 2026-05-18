@@ -10,6 +10,54 @@
 html {
   min-height: 100%;
   -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+}
+
+/* Always included — not purged by Tailwind */
+.page-gutter-x {
+  box-sizing: border-box;
+  padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+}
+
+.app-page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+}
+
+.app-form-field {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Every control inside a form/page shell — belt-and-suspenders for iOS Safari */
+.app-page :is(input, select, textarea),
+.app-form :is(input, select, textarea) {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.app-form :is(label, fieldset, [role="group"]) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.app-form .form-field-row {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 /* Fieldsets default to min-width: min-content, which blows past page padding on mobile */
@@ -63,18 +111,18 @@ body {
   input[type="date"],
   input[type="time"],
   input[type="datetime-local"],
+  input[type="number"],
   select {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
   }
 }
 
 @layer utilities {
   .pb-nav {
     padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
-  }
-
-  .page-gutter-x {
-    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
-    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
   }
 }

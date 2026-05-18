@@ -25,6 +25,7 @@ import { ValuePicker } from "./ValuePicker";
 import {
   btnPrimaryClass,
   btnSecondaryClass,
+  formClass,
   pageContainerNarrowClass,
   sectionTitleClass,
 } from "@/lib/ui";
@@ -161,10 +162,7 @@ export function Onboarding({
         <LocalDataNotice className="mx-auto mt-3 max-w-md text-center" />
       </header>
 
-      <form
-        onSubmit={handleSubmit}
-        className="w-full min-w-0 max-w-full space-y-5 sm:space-y-6"
-      >
+      <form onSubmit={handleSubmit} className={formClass}>
         <fieldset className="w-full min-w-0 max-w-full space-y-3">
           <legend className="text-sm font-medium text-sage-700 sm:text-base">
             When did you quit (or plan to quit)?
@@ -181,7 +179,7 @@ export function Onboarding({
           <legend className="text-sm font-medium text-sage-700 sm:text-base">
             What were you using? (select all that apply)
           </legend>
-          <div className="grid grid-cols-1 gap-2 xs:grid-cols-3 sm:gap-3">
+          <div className="form-field-row grid min-w-0 grid-cols-1 gap-2 xs:grid-cols-3 sm:gap-3">
             {productOptions.map(({ key, label, checked, set }) => (
               <button
                 key={key}
@@ -248,12 +246,12 @@ export function Onboarding({
               optional
               hint={`Check your pouch label. Leave blank to estimate from blend (light ~${VARIANT_NICOTINE_MG_PER_GRAM.light}, medium ~${VARIANT_NICOTINE_MG_PER_GRAM.medium}, heavy ~${VARIANT_NICOTINE_MG_PER_GRAM.heavy} mg/g).`}
             />
-            <fieldset className="space-y-2">
+            <fieldset className="w-full min-w-0 max-w-full space-y-2">
               <legend className="text-sm font-medium text-sage-700">
                 Blend strength
                 {packNicotineMgPerGram.trim() ? " (not used for nicotine)" : ""}
               </legend>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="form-field-row grid min-w-0 grid-cols-3 gap-2">
                 {(
                   Object.entries(TOBACCO_VARIANT_LABELS) as [
                     TobaccoVariant,
@@ -375,7 +373,7 @@ export function Onboarding({
           {APP_DISCLAIMER}
         </p>
 
-        <div className="space-y-3">
+        <div className="form-field-row space-y-3">
           <button
             type="submit"
             disabled={!usesCigarettes && !usesVaping && !usesTobacco}

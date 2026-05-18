@@ -1,6 +1,6 @@
 "use client";
 
-import { pickerInputClass, selectClass } from "@/lib/ui";
+import { formFieldWrapperClass, pickerInputClass, selectClass } from "@/lib/ui";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 60 }, (_, i) => i);
@@ -50,9 +50,9 @@ export function QuitDateTimeFields({
 
   return (
     <div className="min-w-0 max-w-full space-y-4">
-      <label className="block w-full min-w-0 max-w-full space-y-2">
+      <label className={`${formFieldWrapperClass} space-y-2`}>
         <span className="text-sm font-medium text-sage-700">Date</span>
-        <div className="w-full min-w-0 max-w-full overflow-hidden">
+        <div className="form-field-row overflow-hidden">
         <input
           id="quit-date"
           type="date"
@@ -80,8 +80,8 @@ export function QuitDateTimeFields({
           Choose hour and minute, or use the clock picker below
         </p>
 
-        <div className="grid grid-cols-2 gap-2">
-          <label className="block min-w-0 space-y-1">
+        <div className="form-field-row grid grid-cols-2 gap-2">
+          <label className={`${formFieldWrapperClass} space-y-1`}>
             <span className="text-xs font-medium text-stone-600">Hour</span>
             <select
               id="quit-hour"
@@ -98,7 +98,7 @@ export function QuitDateTimeFields({
               ))}
             </select>
           </label>
-          <label className="block min-w-0 space-y-1">
+          <label className={`${formFieldWrapperClass} space-y-1`}>
             <span className="text-xs font-medium text-stone-600">Minute</span>
             <select
               id="quit-minute"
@@ -117,11 +117,11 @@ export function QuitDateTimeFields({
           </label>
         </div>
 
-        <label className="block w-full min-w-0 max-w-full space-y-2 pt-1">
+        <label className={`${formFieldWrapperClass} space-y-2 pt-1`}>
           <span className="text-xs font-medium text-stone-600">
             Or pick a time
           </span>
-          <div className="w-full min-w-0 max-w-full overflow-hidden">
+          <div className="form-field-row overflow-hidden">
             <input
               id="quit-time"
               type="time"
