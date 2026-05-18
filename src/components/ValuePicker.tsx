@@ -4,6 +4,8 @@ import type { UsagePreset } from "@/lib/usage-pickers";
 import {
   clampValue,
   formatPickerNumber,
+  isAllowedDecimalInput,
+  parseLocalizedNumber,
   presetSelectValue,
   roundToStep,
 } from "@/lib/usage-pickers";
@@ -40,8 +42,8 @@ export function ValuePicker({
   pickerHint = "Pick a common amount, tap − / +, or type an exact value",
   optional = false,
 }: ValuePickerProps) {
-  const parsed = parseFloat(value);
-  const hasValue = value.trim() !== "" && Number.isFinite(parsed);
+  const parsed = parseLocalizedNumber(value);
+  const hasValue = parsed !== null;
   const num = hasValue ? parsed : min;
 
   function setNumber(next: number) {
@@ -57,10 +59,15 @@ export function ValuePicker({
     setNumber(roundToStep(num + delta, step));
   }
 
+  function handleExactInputChange(raw: string) {
+    if (!isAllowedDecimalInput(raw)) return;
+    onChange(raw);
+  }
+
   function normalizeExactValue() {
     if (!value.trim()) return;
-    const next = parseFloat(value);
-    if (!Number.isFinite(next)) {
+    const next = parseLocalizedNumber(value);
+    if (next === null) {
       onChange("");
       return;
     }
@@ -145,13 +152,11 @@ export function ValuePicker({
         <span className="text-xs font-medium text-stone-600">Exact value</span>
         <input
           id={id}
-          type="number"
-          min={min}
-          max={max}
-          step="any"
+          type="text"
           inputMode="decimal"
+          autoComplete="off"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => handleExactInputChange(e.target.value)}
           onBlur={normalizeExactValue}
           required={required}
           className={inputClass}

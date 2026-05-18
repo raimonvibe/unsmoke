@@ -305,7 +305,7 @@ export function Onboarding({
               presets={COST_PER_PACKAGE_PRESETS}
               min={1}
               max={50}
-              step={1}
+              step={0.01}
               unit="USD"
               required={usesTobacco}
             />
@@ -362,7 +362,7 @@ export function Onboarding({
               presets={COST_PER_BOTTLE_PRESETS}
               min={1}
               max={50}
-              step={1}
+              step={0.01}
               unit="USD"
               required={usesVaping}
             />

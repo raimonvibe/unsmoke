@@ -89,6 +89,29 @@ export const PACK_NICOTINE_MG_PER_G_PRESETS: UsagePreset[] = [
   { value: "18", label: "18 mg/g" },
 ];
 
+/** Accepts "12.5" and "12,5" (common on European phone keyboards). */
+export function parseLocalizedNumber(raw: string): number | null {
+  const trimmed = raw.trim().replace(/\s/g, "");
+  if (!trimmed || trimmed === "." || trimmed === ",") return null;
+
+  let normalized = trimmed;
+  const hasComma = trimmed.includes(",");
+  const hasDot = trimmed.includes(".");
+
+  if (hasComma && hasDot) {
+    normalized = trimmed.replace(/\./g, "").replace(",", ".");
+  } else if (hasComma) {
+    normalized = trimmed.replace(",", ".");
+  }
+
+  const n = parseFloat(normalized);
+  return Number.isFinite(n) ? n : null;
+}
+
+export function isAllowedDecimalInput(raw: string): boolean {
+  return raw === "" || /^-?\d*[.,]?\d*$/.test(raw);
+}
+
 export function roundToStep(value: number, step: number): number {
   const rounded = Math.round(value / step) * step;
   const decimals = step.toString().includes(".")
