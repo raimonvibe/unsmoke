@@ -1,11 +1,10 @@
 "use client";
 
 import type { UsagePreset } from "@/lib/usage-pickers";
+import { isAllowedDecimalInput, parseLocalizedNumber } from "@/lib/parse-number";
 import {
   clampValue,
   formatPickerNumber,
-  isAllowedDecimalInput,
-  parseLocalizedNumber,
   presetSelectValue,
   roundToStep,
 } from "@/lib/usage-pickers";
@@ -39,7 +38,7 @@ export function ValuePicker({
   unit,
   required,
   hint,
-  pickerHint = "Pick a common amount, tap − / +, or type an exact value",
+  pickerHint,
   optional = false,
 }: ValuePickerProps) {
   const parsed = parseLocalizedNumber(value);
@@ -77,6 +76,11 @@ export function ValuePicker({
   const selectValue = presetSelectValue(value, presets);
   const displayUnit = unit ? ` ${unit}` : "";
   const hasEmptyPreset = presets.some((p) => p.value === "");
+  const resolvedPickerHint =
+    pickerHint ??
+    (step < 1
+      ? "Pick a common amount, tap − / +, or type a value (comma or period for decimals)"
+      : "Pick a common amount, tap − / +, or type an exact value");
 
   return (
     <div
@@ -90,7 +94,7 @@ export function ValuePicker({
       {hint && (
         <span className="block text-xs text-stone-500 sm:text-sm">{hint}</span>
       )}
-      <p className="text-xs text-stone-500">{pickerHint}</p>
+      <p className="text-xs text-stone-500">{resolvedPickerHint}</p>
 
       <label className={`${formFieldWrapperClass} space-y-1`}>
         <span className="sr-only">{label} — quick pick</span>

@@ -2,6 +2,7 @@
 
 import { FormEvent, ReactNode, useState } from "react";
 import { localDateTimeToIso } from "@/lib/date";
+import { parseFormNumber, parseOptionalFormNumber } from "@/lib/parse-number";
 import { deriveProductType } from "@/lib/normalize-quit-data";
 import {
   defaultQuitFormState,
@@ -92,28 +93,28 @@ export function Onboarding({
 
     if (usesCigarettes) {
       sections.cigarettes = {
-        perDay: Math.max(1, parseFloat(cigarettesPerDay) || 1),
-        costPerUnit: Math.max(0, parseFloat(costPerCigarette) || 0),
+        perDay: Math.max(1, Math.round(parseFormNumber(cigarettesPerDay, 1))),
+        costPerUnit: Math.max(0, parseFormNumber(costPerCigarette, 0)),
       };
     }
 
     if (usesVaping) {
       sections.vaping = {
-        mlPerDay: Math.max(0.1, parseFloat(mlPerDay) || 0.1),
-        nicotineMgPerMl: Math.max(0.1, parseFloat(nicotineMgPerMl) || 0.1),
-        bottleMl: Math.max(1, parseFloat(bottleMl) || 1),
-        costPerBottle: Math.max(0, parseFloat(costPerBottle) || 0),
+        mlPerDay: Math.max(0.1, parseFormNumber(mlPerDay, 0.1)),
+        nicotineMgPerMl: Math.max(0.1, parseFormNumber(nicotineMgPerMl, 0.1)),
+        bottleMl: Math.max(1, parseFormNumber(bottleMl, 1)),
+        costPerBottle: Math.max(0, parseFormNumber(costPerBottle, 0)),
       };
     }
 
     if (usesTobacco) {
-      const labelMg = parseFloat(packNicotineMgPerGram);
+      const labelMg = parseOptionalFormNumber(packNicotineMgPerGram);
       sections.tobacco = {
         variant: tobaccoVariant,
-        gramsPerDay: Math.max(0.1, parseFloat(gramsPerDay) || 0.1),
-        packageGrams: Math.max(1, parseFloat(packageGrams) || 1),
-        costPerPackage: Math.max(0, parseFloat(costPerPackage) || 0),
-        ...(labelMg > 0 ? { nicotineMgPerGram: labelMg } : {}),
+        gramsPerDay: Math.max(0.1, parseFormNumber(gramsPerDay, 0.1)),
+        packageGrams: Math.max(1, parseFormNumber(packageGrams, 1)),
+        costPerPackage: Math.max(0, parseFormNumber(costPerPackage, 0)),
+        ...(labelMg != null && labelMg > 0 ? { nicotineMgPerGram: labelMg } : {}),
       };
     }
 
@@ -336,9 +337,9 @@ export function Onboarding({
               value={nicotineMgPerMl}
               onChange={setNicotineMgPerMl}
               presets={NICOTINE_MG_PER_ML_PRESETS}
-              min={1}
+              min={0.1}
               max={50}
-              step={1}
+              step={0.1}
               unit="mg/ml"
               required={usesVaping}
             />
