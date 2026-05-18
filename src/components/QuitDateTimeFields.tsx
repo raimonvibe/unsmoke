@@ -49,7 +49,7 @@ export function QuitDateTimeFields({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 max-w-full space-y-4">
       <label className="block min-w-0 space-y-2">
         <span className="text-sm font-medium text-sage-700">Date</span>
         <input

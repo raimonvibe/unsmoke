@@ -72,7 +72,11 @@ export function ValuePicker({
   const hasEmptyPreset = presets.some((p) => p.value === "");
 
   return (
-    <div className="space-y-2" role="group" aria-labelledby={`${id}-label`}>
+    <div
+      className="min-w-0 max-w-full space-y-2"
+      role="group"
+      aria-labelledby={`${id}-label`}
+    >
       <span id={`${id}-label`} className="text-sm font-medium text-sage-700">
         {label}
       </span>

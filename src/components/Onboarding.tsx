@@ -161,8 +161,11 @@ export function Onboarding({
         <LocalDataNotice className="mx-auto mt-3 max-w-md text-center" />
       </header>
 
-      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-        <fieldset className="space-y-3">
+      <form
+        onSubmit={handleSubmit}
+        className="min-w-0 max-w-full space-y-5 sm:space-y-6"
+      >
+        <fieldset className="min-w-0 space-y-3">
           <legend className="text-sm font-medium text-sage-700 sm:text-base">
             When did you quit (or plan to quit)?
           </legend>
@@ -174,7 +177,7 @@ export function Onboarding({
           />
         </fieldset>
 
-        <fieldset className="space-y-3">
+        <fieldset className="min-w-0 space-y-3">
           <legend className="text-sm font-medium text-sage-700 sm:text-base">
             What were you using? (select all that apply)
           </legend>
@@ -403,7 +406,7 @@ function ProductSection({
   children: ReactNode;
 }) {
   return (
-    <fieldset className="space-y-4 rounded-2xl border border-sage-100 bg-white/70 p-4 sm:bg-white/80 sm:p-5 md:p-6">
+    <fieldset className="min-w-0 max-w-full space-y-4 rounded-2xl border border-sage-100 bg-white/70 p-4 sm:bg-white/80 sm:p-5 md:p-6">
       <legend className="px-1 text-sm font-semibold text-sage-800 sm:text-base">
         {title}
       </legend>
