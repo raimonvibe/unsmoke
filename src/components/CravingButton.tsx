@@ -22,7 +22,11 @@ export function CravingButton({ onCravingLogged }: CravingButtonProps) {
 
   if (active) {
     return (
-      <BreathingExercise message={message} onComplete={() => setActive(false)} />
+      <BreathingExercise
+        message={message}
+        onComplete={() => setActive(false)}
+        onClose={() => setActive(false)}
+      />
     );
   }
 

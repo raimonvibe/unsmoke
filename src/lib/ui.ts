@@ -23,6 +23,9 @@ export const pickerInputClass =
 export const btnPrimaryClass =
   "min-h-[2.75rem] rounded-xl bg-sage-600 px-6 py-3.5 text-base font-semibold text-white shadow-md transition-all hover:bg-sage-700 hover:shadow-lg active:scale-[0.98] sm:py-4 sm:text-sm";
 
+export const btnSecondaryClass =
+  "min-h-[2.75rem] rounded-xl border-2 border-sage-300 bg-white px-6 py-3.5 text-base font-semibold text-sage-800 transition-all hover:border-sage-400 hover:bg-sage-50 active:scale-[0.98] sm:py-4 sm:text-sm";
+
 export const statGridClass = "grid grid-cols-2 gap-2.5 sm:gap-3";
 
 export const sectionTitleClass =

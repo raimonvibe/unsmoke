@@ -7,12 +7,15 @@ import { DashboardStats } from "./DashboardStats";
 import { HealthTimeline } from "./HealthTimeline";
 import { CravingButton } from "./CravingButton";
 import { HealthSourcesPanel } from "./HealthSourcesPanel";
+import { JourneyActions } from "./JourneyActions";
 
 interface DashboardProps {
   quitData: QuitData;
+  onEdit: () => void;
+  onRelapse: () => void;
 }
 
-export function Dashboard({ quitData }: DashboardProps) {
+export function Dashboard({ quitData, onEdit, onRelapse }: DashboardProps) {
   const now = useNow();
   const quitDate = new Date(quitData.quitDate);
 
@@ -29,6 +32,7 @@ export function Dashboard({ quitData }: DashboardProps) {
       </header>
 
       <DashboardStats quitData={quitData} now={now} />
+      <JourneyActions onEdit={onEdit} onRelapse={onRelapse} />
       <CravingButton />
       <HealthTimeline quitDate={quitDate} now={now} />
       <HealthSourcesPanel variant="full" />

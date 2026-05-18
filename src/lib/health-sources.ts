@@ -38,6 +38,9 @@ export const HEALTH_SOURCES: HealthSource[] = [
   WHO_CESSATION,
 ];
 
+export const LOCAL_DATA_NOTICE =
+  "Your journey is saved only in this browser—not in the cloud. Clearing cookies, site data, or browsing data for this site will erase your progress. Private browsing may not keep it after you close the window.";
+
 export const APP_DISCLAIMER =
   "Unsmoke is a personal tracking tool, not medical advice, and is not affiliated with CDC, WHO, or any health authority. Milestones summarize published public-health timelines for motivation only. Your results depend on your inputs and individual health. Consult a qualified professional for medical questions.";
 

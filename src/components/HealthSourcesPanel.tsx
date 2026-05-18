@@ -9,6 +9,7 @@ import {
   SAVINGS_DISCLAIMER,
 } from "@/lib/health-sources";
 import { MILESTONE_SOURCE } from "@/lib/milestones";
+import { LocalDataNotice } from "./LocalDataNotice";
 
 interface HealthSourcesPanelProps {
   /** Show savings + nicotine notes (dashboard) vs health-only */
@@ -37,6 +38,7 @@ export function HealthSourcesPanel({ variant = "full" }: HealthSourcesPanelProps
       {open && (
         <div className="mt-4 space-y-4 border-t border-sage-100 pt-4 text-sm text-stone-600">
           <p className="leading-relaxed">{APP_DISCLAIMER}</p>
+          <LocalDataNotice className="!text-sm leading-relaxed text-stone-600" />
 
           {variant === "full" && (
             <>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getQuitData, saveQuitData } from "@/lib/storage";
+import { clearQuitData, getQuitData, saveQuitData } from "@/lib/storage";
 import type { QuitData } from "@/lib/types";
 
 export function useQuitData() {
@@ -18,5 +18,10 @@ export function useQuitData() {
     setData(quitData);
   }, []);
 
-  return { data, loaded, save };
+  const clear = useCallback(() => {
+    clearQuitData();
+    setData(null);
+  }, []);
+
+  return { data, loaded, save, clear };
 }

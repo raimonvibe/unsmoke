@@ -40,7 +40,11 @@ export function logCraving(): string[] {
   return log;
 }
 
-export function clearAllData(): void {
+export function clearQuitData(): void {
   localStorage.removeItem(STORAGE_KEYS.quitData);
+}
+
+export function clearAllData(): void {
+  clearQuitData();
   localStorage.removeItem(STORAGE_KEYS.cravingLog);
 }

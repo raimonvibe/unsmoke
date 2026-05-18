@@ -1,11 +1,17 @@
 "use client";
 
 import { FormEvent, ReactNode, useState } from "react";
-import { localDateTimeToIso, toLocalDateString } from "@/lib/date";
+import { localDateTimeToIso } from "@/lib/date";
 import { deriveProductType } from "@/lib/normalize-quit-data";
+import {
+  defaultQuitFormState,
+  quitFormStateFromData,
+} from "@/lib/quit-data-form";
+import { LocalDataNotice } from "./LocalDataNotice";
 import { QuitDateTimeFields } from "./QuitDateTimeFields";
 import {
   btnPrimaryClass,
+  btnSecondaryClass,
   inputClass,
   pageContainerNarrowClass,
   sectionTitleClass,
@@ -19,33 +25,48 @@ import {
 
 interface OnboardingProps {
   onComplete: (data: QuitData) => void;
+  initialData?: QuitData;
+  onCancel?: () => void;
 }
 
-export function Onboarding({ onComplete }: OnboardingProps) {
-  const now = new Date();
-  const defaultDate = toLocalDateString(now);
-  const defaultTime = now.toTimeString().slice(0, 5);
+export function Onboarding({
+  onComplete,
+  initialData,
+  onCancel,
+}: OnboardingProps) {
+  const isEdit = Boolean(initialData);
+  const initial = initialData
+    ? quitFormStateFromData(initialData)
+    : defaultQuitFormState();
 
-  const [quitDate, setQuitDate] = useState(defaultDate);
-  const [quitTime, setQuitTime] = useState(defaultTime);
+  const [quitDate, setQuitDate] = useState(initial.quitDate);
+  const [quitTime, setQuitTime] = useState(initial.quitTime);
 
-  const [usesCigarettes, setUsesCigarettes] = useState(true);
-  const [usesVaping, setUsesVaping] = useState(false);
-  const [usesTobacco, setUsesTobacco] = useState(false);
+  const [usesCigarettes, setUsesCigarettes] = useState(initial.usesCigarettes);
+  const [usesVaping, setUsesVaping] = useState(initial.usesVaping);
+  const [usesTobacco, setUsesTobacco] = useState(initial.usesTobacco);
 
-  const [cigarettesPerDay, setCigarettesPerDay] = useState("20");
-  const [costPerCigarette, setCostPerCigarette] = useState("0.50");
+  const [cigarettesPerDay, setCigarettesPerDay] = useState(
+    initial.cigarettesPerDay
+  );
+  const [costPerCigarette, setCostPerCigarette] = useState(
+    initial.costPerCigarette
+  );
 
-  const [mlPerDay, setMlPerDay] = useState("2");
-  const [nicotineMgPerMl, setNicotineMgPerMl] = useState("20");
-  const [bottleMl, setBottleMl] = useState("10");
-  const [costPerBottle, setCostPerBottle] = useState("15");
+  const [mlPerDay, setMlPerDay] = useState(initial.mlPerDay);
+  const [nicotineMgPerMl, setNicotineMgPerMl] = useState(initial.nicotineMgPerMl);
+  const [bottleMl, setBottleMl] = useState(initial.bottleMl);
+  const [costPerBottle, setCostPerBottle] = useState(initial.costPerBottle);
 
-  const [tobaccoVariant, setTobaccoVariant] = useState<TobaccoVariant>("medium");
-  const [gramsPerDay, setGramsPerDay] = useState("5");
-  const [packageGrams, setPackageGrams] = useState("50");
-  const [costPerPackage, setCostPerPackage] = useState("12");
-  const [packNicotineMgPerGram, setPackNicotineMgPerGram] = useState("");
+  const [tobaccoVariant, setTobaccoVariant] = useState<TobaccoVariant>(
+    initial.tobaccoVariant
+  );
+  const [gramsPerDay, setGramsPerDay] = useState(initial.gramsPerDay);
+  const [packageGrams, setPackageGrams] = useState(initial.packageGrams);
+  const [costPerPackage, setCostPerPackage] = useState(initial.costPerPackage);
+  const [packNicotineMgPerGram, setPackNicotineMgPerGram] = useState(
+    initial.packNicotineMgPerGram
+  );
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -115,15 +136,17 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           🌱
         </span>
         <h1 className={`${sectionTitleClass} text-balance`}>
-          Unsmoke
+          {isEdit ? "Update your details" : "Unsmoke"}
         </h1>
         <p className="mt-2 text-sm font-medium text-sage-600 sm:text-base">
-          Quit smoking &amp; vaping
+          {isEdit ? "Adjust your journey" : "Quit smoking & vaping"}
         </p>
         <p className="mx-auto mt-3 max-w-md text-sm text-stone-600 text-balance sm:text-base">
-          Tell us a little about your journey. Everything stays private on this
-          device.
+          {isEdit
+            ? "Change your quit date or what you were using."
+            : "Tell us a little about your journey."}
         </p>
+        <LocalDataNotice className="mx-auto mt-3 max-w-md text-center" />
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
@@ -377,13 +400,24 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           {APP_DISCLAIMER}
         </p>
 
-        <button
-          type="submit"
-          disabled={!usesCigarettes && !usesVaping && !usesTobacco}
-          className={`${btnPrimaryClass} sticky bottom-4 z-10 w-full disabled:cursor-not-allowed disabled:opacity-50 sm:static`}
-        >
-          Start my journey
-        </button>
+        <div className="space-y-3">
+          <button
+            type="submit"
+            disabled={!usesCigarettes && !usesVaping && !usesTobacco}
+            className={`${btnPrimaryClass} sticky bottom-4 z-10 w-full disabled:cursor-not-allowed disabled:opacity-50 sm:static`}
+          >
+            {isEdit ? "Save changes" : "Start my journey"}
+          </button>
+          {isEdit && onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className={`${btnSecondaryClass} w-full`}
+            >
+              Back to my journey
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
