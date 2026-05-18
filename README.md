@@ -31,6 +31,22 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Branding & link previews
+
+Assets in `public/`:
+
+| File | Used for |
+|------|----------|
+| `favicon.ico` | Browser tab icon, Apple touch icon, PWA install icon |
+| `social-share.png` | Open Graph / Twitter / iMessage link preview image |
+
+When deploying, set your public URL so share previews resolve images correctly:
+
+```bash
+cp .env.example .env.local
+# Edit NEXT_PUBLIC_SITE_URL=https://your-deployed-domain.com
+```
+
 ## Tests
 
 ```bash
