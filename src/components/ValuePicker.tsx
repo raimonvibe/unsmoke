@@ -57,6 +57,16 @@ export function ValuePicker({
     setNumber(roundToStep(num + delta, step));
   }
 
+  function normalizeExactValue() {
+    if (!value.trim()) return;
+    const next = parseFloat(value);
+    if (!Number.isFinite(next)) {
+      onChange("");
+      return;
+    }
+    setNumber(next);
+  }
+
   const selectValue = presetSelectValue(value, presets);
   const displayUnit = unit ? ` ${unit}` : "";
   const hasEmptyPreset = presets.some((p) => p.value === "");
@@ -134,10 +144,11 @@ export function ValuePicker({
           type="number"
           min={min}
           max={max}
-          step={step}
-          inputMode={step >= 1 ? "numeric" : "decimal"}
+          step="any"
+          inputMode="decimal"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={normalizeExactValue}
           required={required}
           className={inputClass}
           placeholder={optional ? "Leave blank if unknown" : undefined}

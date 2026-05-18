@@ -335,7 +335,7 @@ export function Onboarding({
               value={nicotineMgPerMl}
               onChange={setNicotineMgPerMl}
               presets={NICOTINE_MG_PER_ML_PRESETS}
-              min={0.1}
+              min={1}
               max={50}
               step={1}
               unit="mg/ml"
