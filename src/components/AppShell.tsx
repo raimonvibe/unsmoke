@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuitData } from "@/hooks/useQuitData";
-import { pageContainerNarrowClass } from "@/lib/ui";
+import { contentColumnClass, pageContainerClass } from "@/lib/ui";
 import { clearAllData } from "@/lib/storage";
 import { Navigation } from "./Navigation";
 import { Onboarding } from "./Onboarding";
@@ -25,7 +25,7 @@ export function AppShell({ children }: { children?: React.ReactNode }) {
   if (children) {
     return (
       <div className="min-h-[100dvh]">
-        {children}
+        <main className={pageContainerClass}>{children}</main>
         <Navigation />
       </div>
     );
@@ -33,23 +33,25 @@ export function AppShell({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="min-h-[100dvh]">
-      <Dashboard quitData={data} />
-      <footer
-        className={`${pageContainerNarrowClass} !pt-0 !pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))] text-center`}
-      >
-        <button
-          type="button"
-          onClick={() => {
-            if (confirm("Reset all data? This cannot be undone.")) {
-              clearAllData();
-              window.location.reload();
-            }
-          }}
-          className="min-h-[2.75rem] px-4 text-xs text-stone-400 hover:text-stone-600 sm:text-sm"
+      <main className={pageContainerClass}>
+        <Dashboard quitData={data} />
+        <footer
+          className={`${contentColumnClass} mt-6 pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))] text-center`}
         >
-          Reset journey
-        </button>
-      </footer>
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm("Reset all data? This cannot be undone.")) {
+                clearAllData();
+                window.location.reload();
+              }
+            }}
+            className="min-h-[2.75rem] px-4 text-xs text-stone-400 hover:text-stone-600 sm:text-sm"
+          >
+            Reset journey
+          </button>
+        </footer>
+      </main>
       <Navigation />
     </div>
   );

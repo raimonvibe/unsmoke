@@ -1,10 +1,5 @@
 "use client";
-import {
-  cardClass,
-  pageContainerClass,
-  sectionTitleClass,
-  statGridClass,
-} from "@/lib/ui";
+import { cardClass, sectionTitleClass, statGridClass } from "@/lib/ui";
 
 import { useCallback, useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/calculations";
@@ -36,7 +31,7 @@ export function StatsView({ quitData }: StatsViewProps) {
   const stats = getStatsPageData(quitData, cravings, now);
 
   return (
-    <div className={`${pageContainerClass} space-y-5 sm:space-y-6 md:space-y-8`}>
+    <div className="space-y-5 sm:space-y-6 md:space-y-8">
       <header>
         <h1 className={sectionTitleClass}>Your stats</h1>
         <p className="mt-1 text-sm text-stone-500 sm:text-base">

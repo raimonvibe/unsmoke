@@ -1,7 +1,7 @@
 "use client";
 
 import type { QuitData } from "@/lib/types";
-import { pageContainerClass, sectionTitleClass } from "@/lib/ui";
+import { sectionTitleClass } from "@/lib/ui";
 import { useNow } from "@/hooks/useNow";
 import { DashboardStats } from "./DashboardStats";
 import { HealthTimeline } from "./HealthTimeline";
@@ -17,7 +17,7 @@ export function Dashboard({ quitData }: DashboardProps) {
   const quitDate = new Date(quitData.quitDate);
 
   return (
-    <div className={`${pageContainerClass} space-y-5 sm:space-y-6 md:space-y-8`}>
+    <div className="space-y-5 sm:space-y-6 md:space-y-8">
       <header className="text-center">
         <p className="text-xs font-semibold uppercase tracking-wide text-sage-500">
           Unsmoke

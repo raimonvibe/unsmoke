@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navInnerClass } from "@/lib/ui";
+import { navInnerClass, navLinkClass } from "@/lib/ui";
 
 const links = [
   { href: "/", label: "Home", icon: "🌿" },
@@ -24,7 +24,7 @@ export function Navigation() {
             <Link
               key={href}
               href={href}
-              className={`flex min-h-[3rem] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-2 text-xs font-medium transition-colors sm:min-h-[3.25rem] sm:gap-1 sm:text-sm ${
+              className={`${navLinkClass} ${
                 active
                   ? "bg-sage-100 text-sage-800"
                   : "text-stone-500 hover:text-sage-700 active:bg-sage-50"
