@@ -65,7 +65,7 @@ export function DashboardStats({ quitData, now }: DashboardStatsProps) {
           value={formatCurrency(moneySaved)}
           icon="💰"
           hint={`${formatCurrency(getDailyCost(quitData))}/day not spent`}
-          className="col-span-2 xs:col-span-2 md:col-span-1"
+          className="col-span-2"
         />
         {consumptionStats.map((stat) => (
           <StatCard

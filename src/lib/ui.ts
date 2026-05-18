@@ -1,9 +1,10 @@
-/** Main content width + horizontal padding + bottom space for fixed nav */
+/** Main app pages — comfortable on phone/tablet, capped on desktop */
 export const pageContainerClass =
-  "mx-auto w-full max-w-lg px-4 pt-5 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:max-w-xl sm:px-6 sm:pt-7 sm:pb-[calc(6rem+env(safe-area-inset-bottom,0px))] md:max-w-2xl md:px-8 md:pt-8 lg:max-w-3xl lg:pt-10 xl:max-w-4xl";
+  "mx-auto w-full max-w-lg px-4 pt-5 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:max-w-xl sm:px-6 sm:pt-7 sm:pb-[calc(6rem+env(safe-area-inset-bottom,0px))] md:max-w-xl md:px-8 md:pt-8 lg:max-w-2xl lg:pt-10";
 
+/** Forms (onboarding) — stay narrow on all screen sizes */
 export const pageContainerNarrowClass =
-  "mx-auto w-full max-w-lg px-4 py-8 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:max-w-xl sm:px-6 sm:py-10 md:max-w-2xl md:px-8 lg:max-w-3xl";
+  "mx-auto w-full max-w-md px-4 py-8 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:max-w-lg sm:px-6 sm:py-10 md:max-w-lg lg:max-w-xl";
 
 export const cardClass =
   "rounded-2xl border border-sage-100 bg-white/95 p-4 shadow-sm backdrop-blur-sm sm:rounded-2xl sm:p-5 md:p-6";
@@ -14,11 +15,13 @@ export const inputClass =
 export const btnPrimaryClass =
   "min-h-[2.75rem] rounded-xl bg-sage-600 px-6 py-3.5 text-base font-semibold text-white shadow-md transition-all hover:bg-sage-700 hover:shadow-lg active:scale-[0.98] sm:py-4 sm:text-sm";
 
+/** Stat cards — 2 columns; optional 3rd on large but within narrow page */
 export const statGridClass =
-  "grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-3 xl:grid-cols-4";
+  "grid grid-cols-2 gap-2.5 sm:gap-3 lg:gap-4";
 
 export const sectionTitleClass =
   "text-xl font-semibold text-sage-800 sm:text-2xl";
 
+/** Bottom nav matches page content width */
 export const navInnerClass =
-  "mx-auto flex w-full max-w-lg justify-around gap-1 px-3 py-2.5 sm:max-w-xl sm:gap-2 sm:px-4 sm:py-3 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl";
+  "mx-auto flex w-full max-w-lg justify-around gap-1 px-3 py-2.5 sm:max-w-xl sm:gap-2 sm:px-4 sm:py-3 md:max-w-xl lg:max-w-2xl";
