@@ -1,12 +1,10 @@
 "use client";
 
 import { FormEvent, ReactNode, useState } from "react";
-import { localDateTimeToIso } from "@/lib/date";
-import { parseFormNumber, parseOptionalFormNumber } from "@/lib/parse-number";
-import { deriveProductType } from "@/lib/normalize-quit-data";
 import {
   defaultQuitFormState,
   quitFormStateFromData,
+  quitFormStateToData,
 } from "@/lib/quit-data-form";
 import {
   BOTTLE_ML_PRESETS,
@@ -85,44 +83,25 @@ export function Onboarding({
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    if (!usesCigarettes && !usesVaping && !usesTobacco) {
-      return;
-    }
-
-    const sections: Pick<QuitData, "cigarettes" | "vaping" | "tobacco"> = {};
-
-    if (usesCigarettes) {
-      sections.cigarettes = {
-        perDay: Math.max(1, Math.round(parseFormNumber(cigarettesPerDay, 1))),
-        costPerUnit: Math.max(0, parseFormNumber(costPerCigarette, 0)),
-      };
-    }
-
-    if (usesVaping) {
-      sections.vaping = {
-        mlPerDay: Math.max(0.1, parseFormNumber(mlPerDay, 0.1)),
-        nicotineMgPerMl: Math.max(0.1, parseFormNumber(nicotineMgPerMl, 0.1)),
-        bottleMl: Math.max(1, parseFormNumber(bottleMl, 1)),
-        costPerBottle: Math.max(0, parseFormNumber(costPerBottle, 0)),
-      };
-    }
-
-    if (usesTobacco) {
-      const labelMg = parseOptionalFormNumber(packNicotineMgPerGram);
-      sections.tobacco = {
-        variant: tobaccoVariant,
-        gramsPerDay: Math.max(0.1, parseFormNumber(gramsPerDay, 0.1)),
-        packageGrams: Math.max(1, parseFormNumber(packageGrams, 1)),
-        costPerPackage: Math.max(0, parseFormNumber(costPerPackage, 0)),
-        ...(labelMg != null && labelMg > 0 ? { nicotineMgPerGram: labelMg } : {}),
-      };
-    }
-
-    onComplete({
-      quitDate: localDateTimeToIso(quitDate, quitTime),
-      productType: deriveProductType(sections),
-      ...sections,
+    const data = quitFormStateToData({
+      quitDate,
+      quitTime,
+      usesCigarettes,
+      usesVaping,
+      usesTobacco,
+      cigarettesPerDay,
+      costPerCigarette,
+      mlPerDay,
+      nicotineMgPerMl,
+      bottleMl,
+      costPerBottle,
+      tobaccoVariant,
+      gramsPerDay,
+      packageGrams,
+      costPerPackage,
+      packNicotineMgPerGram,
     });
+    if (data) onComplete(data);
   }
 
   const productOptions = [
