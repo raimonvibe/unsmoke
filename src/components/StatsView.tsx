@@ -122,8 +122,8 @@ export function StatsView({ quitData }: StatsViewProps) {
           </ul>
         )}
         <p className="mt-4 text-xs text-stone-500 sm:text-sm">
-          Milestones follow the CDC timeline on Home. Open Sources & disclaimer
-          for references.
+          Milestones follow the health timeline on Home (CDC, WHO, NHS and
+          research). Open Sources & disclaimer for references.
         </p>
       </section>
 

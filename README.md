@@ -6,7 +6,8 @@ A frontend-only Next.js app that helps you track your smoke-free journey. All da
 
 - **Onboarding** — quit date/time, products used, daily usage, costs
 - **Dashboard** — live counter, money saved, units avoided, milestone progress
-- **Health timeline** — milestones aligned with the [U.S. CDC “benefits over time” table](https://www.cdc.gov/tobacco/about/benefits-of-quitting.html) (2024), with source links
+- **Health timeline** — 56 sourced milestones from 20 minutes to 30 years (16 in the first 3 weeks, 21 after year one) from CDC, WHO, NHS, ACS, ALA, NCI, NIDA and peer-reviewed studies; every milestone has its own progress bar and countdown, plus recovery-window bars for 3 weeks, 3 months, 1, 5, 10, 20 and 30 years
+- **Product-aware** — cigarettes and rolling tobacco see every milestone; vaping-only quitters see nicotine-related milestones (smoke-specific ones such as carbon monoxide are hidden)
 - **Craving support** — 60-second 4-4-4 breathing exercise and motivational messages
 - **Stats** — craving log, 7-day chart, streak, achieved milestones
 - **Sources & disclaimer** — expandable panel with official references
@@ -18,7 +19,7 @@ A frontend-only Next.js app that helps you track your smoke-free journey. All da
 | Timer, money, cigarettes/ml/grams | Your inputs + in-app math |
 | Nicotine (vape / pack label) | Your bottle or pouch label |
 | Nicotine (tobacco, est.) | Approximate blend defaults — use pack label when possible |
-| Health milestones | [CDC benefits of quitting](https://www.cdc.gov/tobacco/about/benefits-of-quitting.html); also [Surgeon General 2020](https://www.cdc.gov/tobacco/sgr/2020/index.htm), [WHO cessation Q&A](https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation) |
+| Health milestones | [CDC benefits of quitting](https://www.cdc.gov/tobacco/about/benefits-of-quitting.html), [WHO cessation Q&A](https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation), [NHS smoke free timeline](https://111.wales.nhs.uk/LiveWell/QuitSmokingTimeline/), [Smokefree.gov withdrawal](https://smokefree.gov/challenges-when-quitting/withdrawal/understanding-withdrawal), [NIDA receptor study](https://archives.drugabuse.gov/news-events/nida-notes/2009/10/abstinent-smokers-nicotinic-receptors-take-more-than-a-month-to-normalize), and studies on taste, mood, insulin, HDL, gums, lung function, life expectancy, cardiovascular disease, lung cancer, diabetes, teeth, eyesight and rheumatoid arthritis — full list in `src/lib/health-sources.ts` |
 
 The app does **not** fetch live data from these sites; milestones are stored locally and matched to published timelines.
 

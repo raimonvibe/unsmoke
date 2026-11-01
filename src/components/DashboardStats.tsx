@@ -11,8 +11,8 @@ import {
 } from "@/lib/calculations";
 import {
   getMilestoneCategoryIcon,
+  getMilestonesForQuitData,
   getMilestoneSourceShortName,
-  MILESTONES,
 } from "@/lib/milestones";
 import {
   getConsumptionStats,
@@ -30,13 +30,14 @@ export function DashboardStats({ quitData, now }: DashboardStatsProps) {
   const quitDate = new Date(quitData.quitDate);
   const time = getTimeSinceQuit(quitDate, now);
   const moneySaved = getTotalMoneySaved(quitData, quitDate, now);
+  const milestones = getMilestonesForQuitData(quitData);
   const milestonePct = Math.min(
     100,
-    Math.max(0, getMilestoneProgress(quitDate, now))
+    Math.max(0, getMilestoneProgress(quitDate, now, milestones))
   );
-  const achievedCount = getAchievedMilestones(quitDate, now).length;
-  const latestWin = getLatestAchievedMilestone(quitDate, now);
-  const nextMilestone = getNextMilestone(quitDate, now);
+  const achievedCount = getAchievedMilestones(quitDate, now, milestones).length;
+  const latestWin = getLatestAchievedMilestone(quitDate, now, milestones);
+  const nextMilestone = getNextMilestone(quitDate, now, milestones);
   const consumptionStats = getConsumptionStats(quitData, quitDate, now);
   const hasEstimatedTobaccoNicotine = consumptionStats.some(
     (s) => s.hint === "Estimated from blend"
@@ -124,7 +125,7 @@ export function DashboardStats({ quitData, now }: DashboardStatsProps) {
             Health milestones
           </span>
           <span className="text-sm font-bold text-sage-600 sm:text-base">
-            {achievedCount}/{MILESTONES.length}
+            {achievedCount}/{milestones.length}
           </span>
         </div>
         <div className="h-2.5 overflow-hidden rounded-full bg-sage-100 sm:h-3">
@@ -141,8 +142,8 @@ export function DashboardStats({ quitData, now }: DashboardStatsProps) {
           </p>
         )}
         <p className="mt-2 text-xs text-stone-500 sm:text-sm">
-          CDC &amp; WHO recovery milestones reached in this app — not a medical
-          score or personal health reading
+          Health-agency and research milestones reached in this app — not a
+          medical score or personal health reading
         </p>
       </div>
     </section>

@@ -107,7 +107,7 @@ describe("stats page data matches underlying calculations", () => {
       getLatestAchievedMilestone(quitDate, now)?.id,
       page.milestonesAchieved.at(-1)?.id ?? null
     );
-    assert.equal(getNextMilestone(quitDate, now)?.id, "2w");
+    assert.equal(getNextMilestone(quitDate, now)?.id, "4d");
   });
 });
 
