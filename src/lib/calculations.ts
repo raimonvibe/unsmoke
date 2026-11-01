@@ -70,34 +70,57 @@ export function getCigarettesAvoided(
 
 export function getAchievedMilestones(
   quitDate: Date,
-  now: Date = new Date()
+  now: Date = new Date(),
+  milestones: Milestone[] = MILESTONES
 ): Milestone[] {
   const elapsedMs = getElapsedMs(quitDate, now);
-  return MILESTONES.filter((m) => elapsedMs >= m.durationMs);
+  return milestones.filter((m) => elapsedMs >= m.durationMs);
 }
 
 export function getNextMilestone(
   quitDate: Date,
-  now: Date = new Date()
+  now: Date = new Date(),
+  milestones: Milestone[] = MILESTONES
 ): Milestone | null {
   const elapsedMs = getElapsedMs(quitDate, now);
-  return MILESTONES.find((m) => elapsedMs < m.durationMs) ?? null;
+  return milestones.find((m) => elapsedMs < m.durationMs) ?? null;
 }
 
 export function getLatestAchievedMilestone(
   quitDate: Date,
-  now: Date = new Date()
+  now: Date = new Date(),
+  milestones: Milestone[] = MILESTONES
 ): Milestone | null {
-  const achieved = getAchievedMilestones(quitDate, now);
+  const achieved = getAchievedMilestones(quitDate, now, milestones);
   return achieved.length > 0 ? achieved[achieved.length - 1] : null;
 }
 
 export function getMilestoneProgress(
   quitDate: Date,
+  now: Date = new Date(),
+  milestones: Milestone[] = MILESTONES
+): number {
+  if (milestones.length === 0) return 0;
+  const achieved = getAchievedMilestones(quitDate, now, milestones).length;
+  return Math.round((achieved / milestones.length) * 100);
+}
+
+/** Share of a time span already elapsed since quitting, clamped to 0–100 (unrounded). */
+export function getElapsedPercent(
+  quitDate: Date,
+  durationMs: number,
   now: Date = new Date()
 ): number {
-  const achieved = getAchievedMilestones(quitDate, now).length;
-  return Math.round((achieved / MILESTONES.length) * 100);
+  if (durationMs <= 0) return 100;
+  const pct = (getElapsedMs(quitDate, now) / durationMs) * 100;
+  return Math.min(100, Math.max(0, pct));
+}
+
+/** Percent label for progress bars: one decimal under 10%, whole numbers above. */
+export function formatProgressPercent(pct: number): string {
+  if (pct >= 100) return "100%";
+  if (pct > 0 && pct < 10) return `${(Math.floor(pct * 10) / 10).toFixed(1)}%`;
+  return `${Math.floor(pct)}%`;
 }
 
 /** @deprecated Use getMilestoneProgress */
@@ -119,6 +142,7 @@ export function formatCountdown(ms: number): string {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
+  if (days >= 365) return `${Math.floor(days / 365)}y ${days % 365}d`;
   if (days > 0) return `${days}d ${hours}h ${minutes}m`;
   if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
   if (minutes > 0) return `${minutes}m ${seconds}s`;

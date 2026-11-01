@@ -3,35 +3,42 @@ import { cardClass } from "@/lib/ui";
 
 import {
   formatCountdown,
+  formatProgressPercent,
   getAchievedMilestones,
+  getElapsedPercent,
   getMilestoneProgress,
   getNextMilestone,
   getTimeUntilMilestone,
 } from "@/lib/calculations";
-import { CDC_BENEFITS_OVER_TIME, WHO_CESSATION } from "@/lib/health-sources";
 import {
   getMilestoneCategoryIcon,
+  getMilestonesForQuitData,
   getMilestoneSourceShortName,
   groupMilestonesByPhase,
   groupYearMilestonesByBand,
   MILESTONE_PHASE_LABELS,
   MILESTONE_PHASE_ORDER,
-  MILESTONES,
+  RECOVERY_WINDOWS,
+  usesSmokedTobacco,
   YEAR_BAND_LABELS,
 } from "@/lib/milestones";
-import type { Milestone } from "@/lib/types";
+import { getHealthSource } from "@/lib/health-sources";
+import type { Milestone, QuitData } from "@/lib/types";
 
 interface HealthTimelineProps {
-  quitDate: Date;
+  quitData: QuitData;
   now: Date;
 }
 
-export function HealthTimeline({ quitDate, now }: HealthTimelineProps) {
-  const achieved = getAchievedMilestones(quitDate, now);
+export function HealthTimeline({ quitData, now }: HealthTimelineProps) {
+  const quitDate = new Date(quitData.quitDate);
+  const milestones = getMilestonesForQuitData(quitData);
+  const vapingOnly = !usesSmokedTobacco(quitData);
+  const achieved = getAchievedMilestones(quitDate, now, milestones);
   const achievedIds = new Set(achieved.map((m) => m.id));
-  const next = getNextMilestone(quitDate, now);
-  const progressPct = getMilestoneProgress(quitDate, now);
-  const phaseGroups = groupMilestonesByPhase();
+  const next = getNextMilestone(quitDate, now, milestones);
+  const progressPct = getMilestoneProgress(quitDate, now, milestones);
+  const phaseGroups = groupMilestonesByPhase(milestones);
 
   return (
     <section className="space-y-4">
@@ -42,13 +49,13 @@ export function HealthTimeline({ quitDate, now }: HealthTimelineProps) {
               Health timeline
             </h2>
             <p className="mt-1 text-sm text-stone-500 sm:text-base">
-              Official CDC &amp; WHO recovery milestones — for education, not a
-              medical assessment.
+              What typically happens in your body after quitting, from health
+              agencies and research. For education, not a medical assessment.
             </p>
           </div>
           <div className="rounded-xl bg-sage-50 px-3 py-2 text-center">
             <p className="text-lg font-bold tabular-nums text-sage-700">
-              {achieved.length}/{MILESTONES.length}
+              {achieved.length}/{milestones.length}
             </p>
             <p className="text-[10px] font-medium uppercase tracking-wide text-sage-600 xs:text-xs">
               reached
@@ -57,39 +64,44 @@ export function HealthTimeline({ quitDate, now }: HealthTimelineProps) {
         </div>
 
         <div className="mt-4">
-          <div className="mb-1.5 flex justify-between text-xs text-stone-500 sm:text-sm">
-            <span>Overall progress</span>
-            <span className="font-semibold text-sage-700">{progressPct}%</span>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-sage-100">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-sage-400 to-sage-600 transition-all duration-700"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
+          <ProgressBar
+            label="Overall progress"
+            valueLabel={`${progressPct}%`}
+            pct={progressPct}
+          />
         </div>
 
-        <p className="mt-3 text-xs text-stone-500 sm:text-sm">
-          Sources:{" "}
-          <a
-            href={CDC_BENEFITS_OVER_TIME.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-sage-700 underline decoration-sage-300 underline-offset-2 hover:text-sage-900"
-          >
-            CDC
-          </a>
-          {" · "}
-          <a
-            href={WHO_CESSATION.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-sage-700 underline decoration-sage-300 underline-offset-2 hover:text-sage-900"
-          >
-            WHO
-          </a>
-          . Not affiliated with CDC or WHO.
-        </p>
+        <div className="mt-5 space-y-3 rounded-xl bg-sage-50/60 p-3 sm:p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+            Recovery windows
+          </p>
+          {RECOVERY_WINDOWS.map((window) => {
+            const pct = getElapsedPercent(quitDate, window.durationMs, now);
+            const inWindow = milestones.filter(
+              (m) => m.durationMs <= window.durationMs
+            );
+            const doneInWindow = inWindow.filter((m) =>
+              achievedIds.has(m.id)
+            ).length;
+            return (
+              <ProgressBar
+                key={window.id}
+                label={window.label}
+                valueLabel={`${formatProgressPercent(pct)} · ${doneInWindow}/${inWindow.length} wins`}
+                pct={pct}
+              />
+            );
+          })}
+        </div>
+
+        {vapingOnly && (
+          <p className="mt-4 rounded-xl border border-sky-100 bg-sky-50/70 p-3 text-xs leading-relaxed text-sky-900 sm:text-sm">
+            You quit vaping, so this timeline shows nicotine-related changes
+            only. Milestones about carbon monoxide, tar and long-term smoking
+            risk come from smoking research and are hidden. Long-term data on
+            quitting vaping is still limited.
+          </p>
+        )}
 
         {next && (
           <div className="mt-5 rounded-xl border-2 border-dashed border-sage-300 bg-gradient-to-br from-sage-50 to-white p-4 sm:p-5">
@@ -103,7 +115,6 @@ export function HealthTimeline({ quitDate, now }: HealthTimelineProps) {
                 isNext
                 quitDate={quitDate}
                 now={now}
-                showCountdown
               />
             </div>
           </div>
@@ -117,13 +128,16 @@ export function HealthTimeline({ quitDate, now }: HealthTimelineProps) {
 
             return (
               <div key={phase}>
-                <div className="mb-4 flex items-baseline justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-sage-800 sm:text-base">
-                    {MILESTONE_PHASE_LABELS[phase]}
-                  </h3>
-                  <span className="shrink-0 text-xs text-stone-400">
-                    {phaseDone}/{items.length}
-                  </span>
+                <div className="mb-4">
+                  <div className="mb-1.5 flex items-baseline justify-between gap-2">
+                    <h3 className="text-sm font-semibold text-sage-800 sm:text-base">
+                      {MILESTONE_PHASE_LABELS[phase]}
+                    </h3>
+                    <span className="shrink-0 text-xs tabular-nums text-stone-400">
+                      {phaseDone}/{items.length}
+                    </span>
+                  </div>
+                  <BarTrack pct={(phaseDone / items.length) * 100} />
                 </div>
                 {phase === "years" ? (
                   <div className="space-y-6">
@@ -171,6 +185,41 @@ export function HealthTimeline({ quitDate, now }: HealthTimelineProps) {
   );
 }
 
+function BarTrack({ pct, thin = false }: { pct: number; thin?: boolean }) {
+  return (
+    <div
+      className={`${thin ? "h-1.5" : "h-2"} overflow-hidden rounded-full bg-sage-100`}
+    >
+      <div
+        className="h-full rounded-full bg-gradient-to-r from-sage-400 to-sage-600 transition-all duration-700"
+        style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
+      />
+    </div>
+  );
+}
+
+function ProgressBar({
+  label,
+  valueLabel,
+  pct,
+}: {
+  label: string;
+  valueLabel: string;
+  pct: number;
+}) {
+  return (
+    <div>
+      <div className="mb-1.5 flex justify-between gap-2 text-xs text-stone-500 sm:text-sm">
+        <span>{label}</span>
+        <span className="font-semibold tabular-nums text-sage-700">
+          {valueLabel}
+        </span>
+      </div>
+      <BarTrack pct={pct} />
+    </div>
+  );
+}
+
 function MilestoneList({
   items,
   achievedIds,
@@ -211,7 +260,6 @@ function MilestoneList({
             isNext={next?.id === milestone.id}
             quitDate={quitDate}
             now={now}
-            showCountdown={next?.id === milestone.id}
           />
         </li>
       ))}
@@ -219,23 +267,30 @@ function MilestoneList({
   );
 }
 
+const SOURCE_BADGE_CLASSES: Record<string, string> = {
+  CDC: "bg-sage-100 text-sage-800",
+  WHO: "bg-sky-50 text-sky-800",
+  NHS: "bg-blue-50 text-blue-800",
+};
+
 function MilestoneRow({
   milestone,
   done,
   isNext,
   quitDate,
   now,
-  showCountdown,
 }: {
   milestone: Milestone;
   done: boolean;
   isNext: boolean;
   quitDate: Date;
   now: Date;
-  showCountdown?: boolean;
 }) {
   const source = getMilestoneSourceShortName(milestone.sourceId);
+  const sourceUrl = getHealthSource(milestone.sourceId)?.url;
   const icon = getMilestoneCategoryIcon(milestone.category);
+  const pct = getElapsedPercent(quitDate, milestone.durationMs, now);
+  const reachedOn = new Date(quitDate.getTime() + milestone.durationMs);
 
   return (
     <div
@@ -244,7 +299,7 @@ function MilestoneRow({
           ? "text-sage-800"
           : isNext
             ? "text-sage-700"
-            : "text-stone-400"
+            : "text-stone-500"
       }
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -252,15 +307,17 @@ function MilestoneRow({
           {icon}
         </span>
         <p className="text-sm font-semibold sm:text-base">{milestone.label}</p>
-        <span
+        <a
+          href={sourceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={getHealthSource(milestone.sourceId)?.name}
           className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide xs:text-xs ${
-            source === "WHO"
-              ? "bg-sky-50 text-sky-800"
-              : "bg-sage-100 text-sage-800"
+            SOURCE_BADGE_CLASSES[source] ?? "bg-stone-100 text-stone-700"
           }`}
         >
           {source}
-        </span>
+        </a>
       </div>
       <p className="mt-0.5 text-sm leading-snug sm:text-base sm:leading-normal">
         {milestone.benefit}
@@ -270,10 +327,24 @@ function MilestoneRow({
           Published range: {milestone.publishedTimeframe}
         </p>
       )}
-      {showCountdown && !done && (
-        <p className="mt-2 text-xs font-medium tabular-nums text-sage-700 sm:text-sm">
-          In {formatCountdown(getTimeUntilMilestone(quitDate, milestone, now))}
+      {done ? (
+        <p className="mt-1.5 text-xs font-medium text-sage-600">
+          Reached {reachedOn.toLocaleDateString(undefined, { dateStyle: "medium" })}
         </p>
+      ) : (
+        <div className="mt-2">
+          <BarTrack pct={pct} thin />
+          <p
+            className={`mt-1 flex justify-between gap-2 text-xs tabular-nums ${
+              isNext ? "font-medium text-sage-700" : "text-stone-400"
+            }`}
+          >
+            <span>{formatProgressPercent(pct)}</span>
+            <span>
+              In {formatCountdown(getTimeUntilMilestone(quitDate, milestone, now))}
+            </span>
+          </p>
+        </div>
       )}
     </div>
   );

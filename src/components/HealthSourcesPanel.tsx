@@ -53,12 +53,26 @@ export function HealthSourcesPanel({ variant = "full" }: HealthSourcesPanelProps
               Health timeline
             </h3>
             <p className="mb-2 leading-relaxed">
-              Milestones follow the U.S. CDC table &quot;Health benefits of
-              quitting smoking over time&quot; and the WHO Q&amp;A on smoking
-              cessation. We use a representative time within each published
-              range so the in-app countdown can progress (for example,
-              &quot;several days&quot; at 3 days, &quot;1–12 months&quot; at 3, 6,
-              and 9 months, &quot;5–10 years&quot; at 5, 7, and 8 years).
+              Milestones combine the U.S. CDC table &quot;Health benefits of
+              quitting smoking over time&quot;, the WHO Q&amp;A, the NHS smoke
+              free timeline, and peer-reviewed studies on withdrawal, taste,
+              brain receptors, insulin, cholesterol, gums and lung function, plus
+              long-term cohort studies (up to 30 years) on life expectancy,
+              cardiovascular disease, lung cancer, diabetes, teeth, eyesight
+              and rheumatoid arthritis.
+              Each milestone uses a representative time within its published
+              range (shown under it) so its progress bar can fill — for
+              example, CDC&apos;s &quot;several days&quot; at 4 days and
+              &quot;1–12 months&quot; at 3, 6 and 9 months. Tap a source badge
+              to open the reference.
+            </p>
+            <p className="mb-2 leading-relaxed">
+              Rolling tobacco gives the same carbon-monoxide exposure as
+              factory cigarettes and more inhaled smoke, so all smoking
+              milestones apply. If you only vaped, smoke-specific milestones
+              (carbon monoxide, tar, long-term smoking risk) are hidden and
+              nicotine-related ones remain. Timings are typical averages; your
+              own recovery may be faster or slower.
             </p>
             <SourceLink source={MILESTONE_SOURCE} />
             <div className="mt-3">

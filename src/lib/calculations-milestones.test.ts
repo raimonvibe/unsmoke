@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   formatCountdown,
+  formatProgressPercent,
+  getElapsedPercent,
   getAchievedMilestones,
   getLatestAchievedMilestone,
   getMilestoneProgress,
@@ -14,6 +16,7 @@ import {
   EXPECTED_MILESTONE_COUNT,
   FINAL_MILESTONE_ID,
   FIRST_MILESTONE_ID,
+  MILESTONES_AT_ONE_YEAR,
 } from "../test/milestone-catalog";
 import { at, MS } from "../test/helpers";
 import { QUIT } from "../test/fixtures";
@@ -38,45 +41,53 @@ const JOURNEY_SNAPSHOTS = [
     label: "20 minutes",
     offsetMs: 20 * MS.minute,
     achievedCount: 1,
-    nextId: "12h",
-    progress: 5,
+    nextId: "2h",
+    progress: 2,
     latestId: "20min",
   },
   {
     label: "24 hours",
     offsetMs: 24 * MS.hour,
-    achievedCount: 3,
-    nextId: "3d",
-    progress: 14,
-    latestId: "24h",
+    achievedCount: 6,
+    nextId: "48h",
+    progress: 11,
+    latestId: "24h-lungs",
   },
   {
     label: "3 months",
     offsetMs: 90 * DAY,
-    achievedCount: 8,
-    nextId: "6mo",
-    progress: 38,
+    achievedCount: 27,
+    nextId: "4mo",
+    progress: 48,
     latestId: "3mo",
   },
   {
     label: "1 year",
     offsetMs: 1 * YEAR,
-    achievedCount: 11,
+    achievedCount: MILESTONES_AT_ONE_YEAR,
     nextId: "2y",
-    progress: 52,
-    latestId: "1y",
+    progress: 63,
+    latestId: "1y-lungs",
   },
   {
     label: "5 years",
     offsetMs: 5 * YEAR,
-    achievedCount: 14,
+    achievedCount: 41,
     nextId: "6y-chd",
-    progress: 67,
-    latestId: "5y-stroke",
+    progress: 73,
+    latestId: "5y-lung-cancer",
   },
   {
-    label: "20 years (complete)",
+    label: "20 years",
     offsetMs: 20 * YEAR,
+    achievedCount: 53,
+    nextId: "25y-cvd",
+    progress: 95,
+    latestId: "20y-eyes",
+  },
+  {
+    label: "30 years (complete)",
+    offsetMs: 30 * YEAR,
     achievedCount: EXPECTED_MILESTONE_COUNT,
     nextId: null,
     progress: 100,
@@ -149,7 +160,7 @@ describe("milestone unlock engine", () => {
   });
 
   it("returns null for next when all milestones are achieved", () => {
-    const now = at(QUIT, 20 * YEAR);
+    const now = at(QUIT, 30 * YEAR);
     assert.equal(getNextMilestone(QUIT, now), null);
     assert.equal(getAchievedMilestones(QUIT, now).length, EXPECTED_MILESTONE_COUNT);
   });
@@ -184,18 +195,50 @@ describe("milestone countdown", () => {
     assert.equal(formatCountdown(45 * MS.second), "45s");
     assert.equal(formatCountdown(5 * MS.minute + 30 * MS.second), "5m 30s");
     assert.equal(formatCountdown(2 * DAY + MS.hour), "2d 1h 0m");
+    assert.equal(formatCountdown(364 * DAY), "364d 0h 0m");
+    assert.equal(formatCountdown(9 * YEAR + 4 * DAY), "9y 4d");
   });
 });
 
 describe("milestone progress formula", () => {
-  it("uses round(achieved ÷ total × 100) for every achieved count", () => {
-    for (let achieved = 0; achieved <= EXPECTED_MILESTONE_COUNT; achieved++) {
-      const offset =
-        achieved === 0
-          ? 0
-          : MILESTONES[achieved - 1].durationMs;
+  it("uses round(achieved ÷ total × 100) at every unlock threshold", () => {
+    const offsets = [0, ...new Set(MILESTONES.map((m) => m.durationMs))];
+    for (const offset of offsets) {
+      const achieved = MILESTONES.filter((m) => m.durationMs <= offset).length;
       const progress = getMilestoneProgress(QUIT, at(QUIT, offset));
       assertPercentProgress(achieved, EXPECTED_MILESTONE_COUNT, progress);
     }
+  });
+});
+
+describe("per-milestone progress bars", () => {
+  it("fills from 0% at quit to 100% at the milestone time and clamps", () => {
+    const target = 14 * DAY;
+    assert.equal(getElapsedPercent(QUIT, target, at(QUIT, -DAY)), 0);
+    assert.equal(getElapsedPercent(QUIT, target, at(QUIT, 7 * DAY)), 50);
+    assert.equal(getElapsedPercent(QUIT, target, at(QUIT, target)), 100);
+    assert.equal(getElapsedPercent(QUIT, target, at(QUIT, 30 * DAY)), 100);
+  });
+
+  it("formats small percentages with one decimal and never rounds up to 100%", () => {
+    assert.equal(formatProgressPercent(0), "0%");
+    assert.equal(formatProgressPercent(0.27), "0.2%");
+    assert.equal(formatProgressPercent(9.99), "9.9%");
+    assert.equal(formatProgressPercent(42.7), "42%");
+    assert.equal(formatProgressPercent(99.9), "99%");
+    assert.equal(formatProgressPercent(100), "100%");
+  });
+
+  it("computes progress against a filtered (vaping-only) milestone list", () => {
+    const vapingList = MILESTONES.filter((m) => m.appliesTo === "nicotine");
+    const now = at(QUIT, 7 * DAY);
+    const achieved = getAchievedMilestones(QUIT, now, vapingList);
+    assert.ok(achieved.every((m) => m.appliesTo === "nicotine"));
+    assert.equal(getNextMilestone(QUIT, now, vapingList)?.id, "2w-withdrawal");
+    assert.equal(
+      getMilestoneProgress(QUIT, now, vapingList),
+      Math.round((achieved.length / vapingList.length) * 100)
+    );
+    assert.equal(getMilestoneProgress(QUIT, now, []), 0);
   });
 });

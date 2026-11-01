@@ -18,13 +18,13 @@ export function assertUniqueIds<T extends { id: string }>(
   );
 }
 
-/** Fail when durations are not strictly increasing (catalog sort order). */
-export function assertStrictlyAscendingDurations(
+/** Fail when durations decrease (catalog sort order; equal times are allowed). */
+export function assertAscendingDurations(
   items: { id: string; durationMs: number }[]
 ): void {
   for (let i = 1; i < items.length; i++) {
     assert.ok(
-      items[i].durationMs > items[i - 1].durationMs,
+      items[i].durationMs >= items[i - 1].durationMs,
       `expected ${items[i].id} (${items[i].durationMs}ms) after ${items[i - 1].id} (${items[i - 1].durationMs}ms)`
     );
   }

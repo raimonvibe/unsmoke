@@ -38,9 +38,23 @@ export interface QuitData {
   tobacco?: TobaccoUsage;
 }
 
-export type MilestonePhase = "hours" | "weeks" | "months" | "years";
+export type MilestonePhase = "hours" | "weeks" | "months" | "year" | "years";
 
-export type MilestoneCategory = "heart" | "blood" | "lungs" | "cancer";
+export type MilestoneCategory =
+  | "heart"
+  | "blood"
+  | "lungs"
+  | "cancer"
+  | "brain"
+  | "senses"
+  | "body";
+
+/**
+ * Which quitters a milestone applies to.
+ * - "nicotine": driven by nicotine leaving the body — applies to vaping too
+ * - "smoke": driven by burnt tobacco (carbon monoxide, tar) — cigarettes and rolling tobacco only
+ */
+export type MilestoneAppliesTo = "nicotine" | "smoke";
 
 export interface Milestone {
   id: string;
@@ -53,6 +67,7 @@ export interface Milestone {
   publishedTimeframe?: string;
   phase: MilestonePhase;
   category: MilestoneCategory;
+  appliesTo: MilestoneAppliesTo;
 }
 
 export interface TimeSinceQuit {

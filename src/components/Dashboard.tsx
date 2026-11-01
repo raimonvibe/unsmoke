@@ -17,8 +17,6 @@ interface DashboardProps {
 
 export function Dashboard({ quitData, onEdit, onRelapse }: DashboardProps) {
   const now = useNow();
-  const quitDate = new Date(quitData.quitDate);
-
   return (
     <div className="space-y-5 sm:space-y-6 md:space-y-8">
       <header className="text-center">
@@ -34,7 +32,7 @@ export function Dashboard({ quitData, onEdit, onRelapse }: DashboardProps) {
       <DashboardStats quitData={quitData} now={now} />
       <JourneyActions onEdit={onEdit} onRelapse={onRelapse} />
       <CravingButton />
-      <HealthTimeline quitDate={quitDate} now={now} />
+      <HealthTimeline quitData={quitData} now={now} />
       <HealthSourcesPanel variant="full" />
     </div>
   );

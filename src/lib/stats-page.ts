@@ -1,4 +1,5 @@
 import { getAchievedMilestones } from "./calculations";
+import { getMilestonesForQuitData } from "./milestones";
 import {
   getConsumptionStats,
   getDailyCost,
@@ -36,7 +37,11 @@ export function getStatsPageData(
     smokeFreeDays: getSmokeFreeStreakDays(quitDate, now),
     last7DaysCravings,
     cravingsInChartWindow: last7DaysCravings.reduce((sum, d) => sum + d.count, 0),
-    milestonesAchieved: getAchievedMilestones(quitDate, now),
+    milestonesAchieved: getAchievedMilestones(
+      quitDate,
+      now,
+      getMilestonesForQuitData(quitData)
+    ),
     moneySaved: getTotalMoneySaved(quitData, quitDate, now),
     dailyCost: getDailyCost(quitData),
     consumptionStats: getConsumptionStats(quitData, quitDate, now),

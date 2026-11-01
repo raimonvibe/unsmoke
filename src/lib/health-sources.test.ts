@@ -29,17 +29,24 @@ describe("health sources registry", () => {
 describe("milestone source attribution", () => {
   const allowedSourceIds = new Set(HEALTH_SOURCES.map((s) => s.id));
 
-  it("cites only registered CDC or WHO sources with a published timeframe", () => {
+  it("cites only registered sources and names the source in the published timeframe", () => {
     for (const milestone of MILESTONES) {
+      const source = getHealthSource(milestone.sourceId);
       assert.ok(
         allowedSourceIds.has(milestone.sourceId),
         `${milestone.id}: unknown sourceId ${milestone.sourceId}`
       );
+      const expectedTag = source?.shortName === "Study" ? "study" : source?.shortName;
       assert.ok(
-        milestone.publishedTimeframe?.includes("CDC") ||
-          milestone.publishedTimeframe?.includes("WHO"),
-        `${milestone.id}: timeframe should name CDC or WHO`
+        expectedTag && milestone.publishedTimeframe?.includes(expectedTag),
+        `${milestone.id}: timeframe should name ${expectedTag}`
       );
+    }
+  });
+
+  it("gives every source a short badge name", () => {
+    for (const source of HEALTH_SOURCES) {
+      assert.ok(source.shortName.length > 0, source.id);
     }
   });
 
