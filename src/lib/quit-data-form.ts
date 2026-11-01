@@ -1,4 +1,6 @@
-import { toLocalDateString } from "./date";
+import { localDateTimeToIso, toLocalDateString } from "./date";
+import { deriveProductType } from "./normalize-quit-data";
+import { parseFormNumber, parseOptionalFormNumber } from "./parse-number";
 import type { QuitData, TobaccoVariant } from "./types";
 
 export interface QuitFormState {
@@ -79,5 +81,51 @@ export function quitFormStateFromData(data: QuitData): QuitFormState {
       data.tobacco?.nicotineMgPerGram != null
         ? String(data.tobacco.nicotineMgPerGram)
         : "",
+  };
+}
+
+/**
+ * Convert onboarding form fields into stored QuitData.
+ * Applies the same parsing (comma or dot decimals), fallbacks and minimums the
+ * form enforces. Returns null when no product is selected.
+ */
+export function quitFormStateToData(state: QuitFormState): QuitData | null {
+  if (!state.usesCigarettes && !state.usesVaping && !state.usesTobacco) {
+    return null;
+  }
+
+  const sections: Pick<QuitData, "cigarettes" | "vaping" | "tobacco"> = {};
+
+  if (state.usesCigarettes) {
+    sections.cigarettes = {
+      perDay: Math.max(1, Math.round(parseFormNumber(state.cigarettesPerDay, 1))),
+      costPerUnit: Math.max(0, parseFormNumber(state.costPerCigarette, 0)),
+    };
+  }
+
+  if (state.usesVaping) {
+    sections.vaping = {
+      mlPerDay: Math.max(0.1, parseFormNumber(state.mlPerDay, 0.1)),
+      nicotineMgPerMl: Math.max(0.1, parseFormNumber(state.nicotineMgPerMl, 0.1)),
+      bottleMl: Math.max(1, parseFormNumber(state.bottleMl, 1)),
+      costPerBottle: Math.max(0, parseFormNumber(state.costPerBottle, 0)),
+    };
+  }
+
+  if (state.usesTobacco) {
+    const labelMg = parseOptionalFormNumber(state.packNicotineMgPerGram);
+    sections.tobacco = {
+      variant: state.tobaccoVariant,
+      gramsPerDay: Math.max(0.1, parseFormNumber(state.gramsPerDay, 0.1)),
+      packageGrams: Math.max(1, parseFormNumber(state.packageGrams, 1)),
+      costPerPackage: Math.max(0, parseFormNumber(state.costPerPackage, 0)),
+      ...(labelMg != null && labelMg > 0 ? { nicotineMgPerGram: labelMg } : {}),
+    };
+  }
+
+  return {
+    quitDate: localDateTimeToIso(state.quitDate, state.quitTime),
+    productType: deriveProductType(sections),
+    ...sections,
   };
 }
